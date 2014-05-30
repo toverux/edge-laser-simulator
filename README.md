@@ -3,6 +3,8 @@ edge-laser-simulator
 
 A NodeJS laser simulator for AlsaceDigitale/edgefest-hacking
 
+![alt text](http://i.imgur.com/DaBKSIi.png "Demo")
+
 ##Remarques
 Ceci est un serveur de test pour commencer à coder votre jeu pour l'"Edge Laser".
 Ce repo contient le kit de développement nécessaire, à savoir :
@@ -10,7 +12,7 @@ Ce repo contient le kit de développement nécessaire, à savoir :
 * Visualisateur en websocket (via votre navigateur Web, Chromium/Chrome testé uniquement)
 * Scripts d'exemples (_faites des pull requests, tous langages !_)
 
-**Attention.** Le protocole est entièrement implémenté au niveau fonctionnel, et ceci dans la version du protocole indiquée dans index.html. Néanmoins, toutes les vérifications de format des requeêtes client ne sont pas encore effectuées. Une requête valide mais avec des arguments en trop fonctionnera, mais des dépassements de buffer auront lieu sur des requêtes mal formées et trop courtes.
+**Attention.** Le protocole est entièrement implémenté au niveau fonctionnel, et ceci dans la version du protocole indiquée dans index.html. Néanmoins, toutes les vérifications de format des requêtes client ne sont pas encore effectuées. Une requête valide mais avec des arguments en trop fonctionnera, mais des dépassements de buffer auront lieu sur des requêtes mal formées et trop courtes.
 
 ##Installation
 * Clonez ou téléchargez ce repo en local
