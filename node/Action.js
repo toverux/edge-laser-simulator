@@ -36,7 +36,8 @@ exports.parse = function(rawaction) {
 				x1: parameters.readUInt16LE(0),
 				y1: parameters.readUInt16LE(2),
 				x2: parameters.readUInt16LE(4),
-				y2: parameters.readUInt16LE(6)
+				y2: parameters.readUInt16LE(6),
+				color: getColorName(parameters.readUInt8(8))
 			}
 			break;
 
@@ -48,7 +49,8 @@ exports.parse = function(rawaction) {
 				x1: parameters.readUInt16LE(0),
 				y1: parameters.readUInt16LE(2),
 				x2: parameters.readUInt16LE(4),
-				y2: parameters.readUInt16LE(6)
+				y2: parameters.readUInt16LE(6),
+				color: getColorName(parameters.readUInt8(8))
 			}
 			break;
 
@@ -59,7 +61,8 @@ exports.parse = function(rawaction) {
 				gameId: gameId,
 				x: parameters.readUInt16LE(0),
 				y: parameters.readUInt16LE(2),
-				diameter: parameters.readUInt16LE(4)
+				diameter: parameters.readUInt16LE(4),
+				color: getColorName(parameters.readUInt8(6))
 			}
 			break;
 
@@ -85,6 +88,22 @@ exports.parse = function(rawaction) {
 			}
 			break;
 
+	}
+
+}
+
+
+function getColorName(colorCode) {
+
+	switch(colorCode)
+	{
+		case 1: return 'red'
+		case 2: return 'lime'
+		case 3: return 'yellow'
+		case 4: return 'blue'
+		case 5: return 'fuchsia'
+		case 6: return 'cyan'
+		case 7: return 'white'
 	}
 
 }

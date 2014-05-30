@@ -10,7 +10,6 @@ $(document).ready(function() {
 
 	simulator = document.getElementById("simulator");
 	simctx = simulator.getContext("2d");
-	simctx.strokeStyle = 'lime';
 	simctx.lineWidth = 2;
 
 });
@@ -143,6 +142,8 @@ function refresh() {
 
 		action = draws[i];
 
+		simctx.strokeStyle = action.color;
+
 		switch(action.element) {
 
 			case 'Line':
@@ -175,7 +176,7 @@ function refresh() {
 
 function log(msg) {
 	$('#log').html($('#log').html() + msg + '<br>');
-	$("#log").animate({ scrollTop: $("#log").prop("scrollHeight") }, 400);
+	$("#log").animate({ scrollTop: $("#log").prop("scrollHeight") }, 10);
 }
 
 setInterval(function() {
