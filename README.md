@@ -32,16 +32,16 @@ Elle permet de se libérer de la couche réseau et du protocole lors du dévelop
 
 ####Include the sauce
 ```php
-	include('EdgeLaser.ns.php');
+include('EdgeLaser.ns.php');
 
-	use EdgeLaser\LaserGame;
-	use EdgeLaser\LaserColor;
+use EdgeLaser\LaserGame;
+use EdgeLaser\LaserColor;
 ```
 
 ####Créer un nouveau jeu
 ```php
-	$game = new LaserGame('SuperTetris');
-	$game->setResolution(500)->setDefaultColor(LaserColor::LIME);
+$game = new LaserGame('SuperTetris');
+$game->setResolution(500)->setDefaultColor(LaserColor::LIME);
 ```
 
 * `setResolution` **est obligatoire** et va définir une résolution virtuelle (la résolution finale étant toujours de 65535*65535). Cela permet au développeur de ne pas travailler avec des valeurs inhabituelles deplusieurs dizaines de milliers de pixels. A l'écran, le rendu sera le même pour n'importe quelle résolution virtuelle.
@@ -51,16 +51,16 @@ Elle permet de se libérer de la couche réseau et du protocole lors du dévelop
 Le code de base d'une code de jeu sous EdgeLaserPHP est la suivante :
 
 ```php
-	while(true)
-	{
-		$game->receiveServerCommands();
+while(true)
+{
+	$game->receiveServerCommands();
 
-		if(!$game->isStopped())
-		{
-			//Doing some stuff
-			$game->refresh();
-		}
+	if(!$game->isStopped())
+	{
+		//Doing some stuff
+		$game->refresh();
 	}
+}
 ```
 
 ####Liste des méthodes
@@ -95,7 +95,7 @@ Envoie l'instruction client STOP au serveur.
 Liste des couleurs disponibles :
 * `LaserColor::RED`
 * `LaserColor::LIME`
-* `LaserColor::GREEN (alias LIME)`
+* `LaserColor::GREEN` (alias LIME)
 * `LaserColor::YELLOW`
 * `LaserColor::BLUE`
 * `LaserColor::FUCHSIA`
