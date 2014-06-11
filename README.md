@@ -3,6 +3,8 @@ edge-laser-simulator
 
 A NodeJS laser simulator for AlsaceDigitale/edgefest-hacking
 
+![alt text](http://i.imgur.com/DaBKSIi.png "Demo")
+
 ##Remarques
 Ceci est un serveur de test pour commencer à coder votre jeu pour l'"Edge Laser".
 Ce repo contient le kit de développement nécessaire, à savoir :
@@ -10,7 +12,7 @@ Ce repo contient le kit de développement nécessaire, à savoir :
 * Visualisateur en websocket (via votre navigateur Web, Chromium/Chrome testé uniquement)
 * Scripts d'exemples (_faites des pull requests, tous langages !_)
 
-**Attention.** Le protocole est entièrement implémenté au niveau fonctionnel, et ceci dans la version du protocole indiquée dans index.html. Néanmoins, toutes les vérifications de format des requeêtes client ne sont pas encore effectuées. Une requête valide mais avec des arguments en trop fonctionnera, mais des dépassements de buffer auront lieu sur des requêtes mal formées et trop courtes.
+**Attention.** Le protocole est entièrement implémenté au niveau fonctionnel, et ceci dans la version du protocole indiquée dans index.html. Néanmoins, toutes les vérifications de format des requêtes client ne sont pas encore effectuées. Une requête valide mais avec des arguments en trop fonctionnera, mais des dépassements de buffer auront lieu sur des requêtes mal formées et trop courtes.
 
 ##Installation
 * Clonez ou téléchargez ce repo en local
@@ -44,11 +46,11 @@ $game = new LaserGame('SuperTetris');
 $game->setResolution(500)->setDefaultColor(LaserColor::LIME);
 ```
 
-* `setResolution` **est obligatoire** et va définir une résolution virtuelle (la résolution finale étant toujours de 65535*65535). Cela permet au développeur de ne pas travailler avec des valeurs inhabituelles deplusieurs dizaines de milliers de pixels. A l'écran, le rendu sera le même pour n'importe quelle résolution virtuelle.
+* `setResolution` **est obligatoire** et va définir une résolution virtuelle (la résolution finale étant toujours de 65535*65535). Cela permet au développeur de ne pas travailler avec des valeurs inhabituelles de plusieurs dizaines de milliers de pixels. A l'écran, le rendu sera le même pour n'importe quelle résolution virtuelle.
 * `setDefaultColor` **est facultatif** et permet d'appliquer une couleur de base aux objets ajoutés plus tard qui n'auraient pas de couleur renseignée.
 
 ####Ingame
-Le code de base d'une code de jeu sous EdgeLaserPHP est la suivante :
+Le code de base d'une boucle de jeu sous EdgeLaserPHP est la suivante :
 
 ```php
 while(true)
@@ -67,7 +69,7 @@ while(true)
 #####LaserGame setResolution(int $resolutionXY)
 Définit la résolution virtuelle pour cette instance de jeu
 
-#####LaserGame setDefaultColor(LaserColor $color)
+#####LaserGame setDefaultColor(LaserColor::int $color)
 Définit la couleur par défaut des formes (cf. référence des couleurs)
 
 #####bool isStopped()
@@ -76,13 +78,13 @@ Permet de savoir si l'instance de jeu a été stoppée par le serveur. Dans le c
 #####LaserGame receiveServerCommands()
 Permet de mettre à jour les requêtes serveur (ACK, STOP, GO). **Obligatoire**.
 
-#####LaserGame addLine(int $x1, int $y1, int $x2, int $y2 [, LaserColor $color])
+#####LaserGame addLine(int $x1, int $y1, int $x2, int $y2 [, LaserColor::int $color])
 Trace une ligne selon les arguments donnés.
 
-#####LaserGame addCircle(int $x, int $y, int $diameter [, LaserColor $color])
+#####LaserGame addCircle(int $x, int $y, int $diameter [, LaserColor::int $color])
 Trace un cercle selon les arguments donnés.
 
-#####LaserGame addRectangle(int $x1, int $y1, int $x2, int $y2 [, LaserColor $color])
+#####LaserGame addRectangle(int $x1, int $y1, int $x2, int $y2 [, LaserColor::int $color])
 Trace un rectangle selon les arguments donnés.
 
 #####LaserGame refresh()
