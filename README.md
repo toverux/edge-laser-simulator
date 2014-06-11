@@ -23,7 +23,7 @@ Ce repo contient le kit de développement nécessaire, à savoir :
 ##Run the sauce
 * `node main.js` dans edge-laser-simulator/node
 * Ouvrez index.html dans un navigateur (dans la pseudo-console doit-être affiché _Socket is ready_)
-* (Exemple) `php shapes.php` dans edge-laser-simulator/samples/php
+* (Exemple) `php shapes.php` dans edge-laser-simulator/samples/php (Exemple Windows : `C:\PHP\php.exe -f "shapes.php"`)
 
 Dans votre navigateur, la liste des clients a du être mise à jour. Et par exemple, si vous lancez plusieurs fois le script PHP dans des consoles différentes, la liste contiendra plusieurs fois le même jeu. Vous êtes alors habilité à changer de jeu à la volonté.
 Changer de jeu impliquera l'envoi de la commande STOP au jeu en cours et l'envoi de la commande GO au jeu visé.
