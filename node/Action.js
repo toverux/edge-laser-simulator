@@ -111,6 +111,9 @@ function getColorName(colorCode) {
 
 exports.execute = function(action, client) {
 	
+	if(client == null)
+		client = currentClient;
+
 	switch(action.type) {
 
 		case 'AskingForId':
@@ -146,6 +149,26 @@ exports.execute = function(action, client) {
 				gameName: client.gameName
 			});
 			currentClient = null;
+			break;
+
+		case 'KeyPress':
+			if(client != null) {
+
+				if(action.keycode > 0) {
+
+					message = new Buffer(3);
+					message.write('K', 0, 1, 'ascii');
+					message.writeUInt8(action.player, 1);
+					message.writeUInt8(action.keycode, 2);
+					server.send(message, 0, message.length, client.port, client.address);
+
+				}
+
+				else stopGame(client.gameId);
+
+			}
+
+			else logger.log('No client currently running - not sending your keystrokes');
 			break;
 
 	}
