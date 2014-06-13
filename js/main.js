@@ -64,7 +64,7 @@ function createWebSocket(host) {
 	setTimeout(waitServer, 200);
 }
 
-createWebSocket('ws://127.0.0.1:4243');
+createWebSocket('ws://127.0.0.1:4244');
 
 function waitServer() {
 
