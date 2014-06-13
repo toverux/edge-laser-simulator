@@ -5,13 +5,13 @@ var clientManager = require('./Client.js');
 
 var server = http.createServer(function(request, response) {});
 
-server.listen(4243, function() {});
+server.listen(4244, function() {});
 
 wsServer = new WebSocketServer({
 	httpServer: server
 });
 
-log('Simulator websocket server listening on 127.0.0.1:4243');
+log('Simulator websocket server listening on 127.0.0.1:4244');
 
 var connection;
 

@@ -6,6 +6,182 @@
 
 	namespace EdgeLaser
 	{
+
+		class Socket
+		{
+
+			private $sock;
+			private $internalBuffer;
+
+			public function __construct($socket)
+			{
+					$this->sock = $socket;
+			}
+
+			public function bytesAvail()
+			{
+				$this->getFromSocket();
+				return strlen($this->internalBuffer);
+			}
+
+			private function getFromSocket()
+			{
+				$tmp='';
+				$read = socket_recv($this->sock, $tmp, 65535, MSG_DONTWAIT);
+
+				if ($read > 0)
+				{
+					$this->internalBuffer.= $tmp;
+					// echo "Got $read from socket\n";
+				}
+
+			}
+
+			public function read($byteCount)
+			{
+					$buffer='';
+					$size=0;
+
+					// echo "want to read $byteCount\n";
+
+					while($this->bytesAvail() < $byteCount)
+					{
+							;
+					}
+
+					$buffer = substr($this->internalBuffer,0,$byteCount);
+					$this->internalBuffer = substr($this->internalBuffer,$byteCount);
+
+					// echo "read : '".$buffer."'\n";
+
+					return $buffer;
+			}
+
+			function peek($byteCount)
+			{
+				$buffer='';
+				$size=0;
+
+				// echo "want to peek $byteCount\n";
+
+				while($this->bytesAvail() < $byteCount)
+				{
+						;
+				}
+
+				$buffer = substr($this->internalBuffer,0,$byteCount);
+
+				// echo "peek : '".$buffer."'\n";
+
+				return $buffer;
+			}
+
+		}
+
+		class AbstractCommand
+		{
+			public function parse($socket)
+			{
+				return false;
+			}
+		}
+
+		class PlayerKeyCommand
+		{
+
+			public $key;
+			public $player;
+			public $type;
+
+			public function parse($socket)
+			{
+				$this->type = chr(unpack('C', $socket->peek(1))[1]);
+
+				if($this->type!='K')
+				{
+					return false;
+				}
+
+				$socket->read(1);
+
+				$data=$socket->read(2);
+
+				$this->player = unpack('C1', $data[0])[1];
+				$this->key = unpack('C1', $data[1])[1];
+
+				echo "Player $this->player Key $this->key\n";
+
+				return true;
+
+			}
+		}
+
+		class AckCommand
+		{
+
+			public $gameid;
+			public $type;
+
+			public function parse($socket)
+			{
+				$this->type = chr(unpack('C', $socket->peek(1))[1]);
+
+				if($this->type!='A')
+				{
+					return false;
+				}
+
+				$socket->read(1);
+
+
+				$data=$socket->read(1);
+
+				$this->gameid = unpack('C', $data)[1];
+
+				echo "Game ID : ".$this->gameid."\n";
+
+				return true;
+			}
+		}
+
+		class GoCommand
+		{
+			public $type;
+
+			public function parse($socket)
+			{
+				$this->type = chr(unpack('C', $socket->peek(1))[1]);
+
+				if($this->type!='G')
+				{
+					return false;
+				}
+
+				$socket->read(1);
+
+				return true;
+			}
+		}
+
+		class StopCommand
+		{
+			public $type;
+
+			public function parse($socket)
+			{
+				$this->type = chr(unpack('C', $socket->peek(1))[1]);
+
+				if($this->type!='S')
+				{
+					return false;
+				}
+
+				$socket->read(1);
+
+				return true;
+			}
+		}
+
 		class LaserGame
 		{
 			const HOST = '127.0.0.1';
@@ -31,6 +207,9 @@
 
 				$cmd = pack('C', 0) . pack('Z*', 'H' . $this->gamename);
 				$this->sendCMD($cmd);
+
+				$this->socket = new Socket($this->sock);
+
 			}
 
 			private function sendCMD($binary)
@@ -59,31 +238,35 @@
 
 			public function receiveServerCommands()
 			{
-				$reply = null;
-				socket_recv($this->sock, $reply, 4096, MSG_WAITALL);
+				$commands = array();
 
-				if(!is_null($reply))
+				// echo "1";
+
+				if(!$this->socket->bytesAvail())
 				{
-					switch(chr(unpack('C', $reply)[1]))
+					return $commands;
+				}
+
+				foreach(array('EdgeLaser\PlayerKeyCommand', 'EdgeLaser\GoCommand', 'EdgeLaser\StopCommand', 'EdgeLaser\AckCommand') as $class)
+				{
+					$inst = new $class();
+
+					if ($inst->parse($this->socket))
 					{
-						case 'A':
-							$this->gameid = unpack('C2', $reply)[2];
-							echo "Received ID " . $this->gameid . "\n";
-							break;
 
-						case 'G':
-							$this->stopped = false;
-							echo "Received 'GO' order !\n";
-							break;
+						switch($inst->type)
+						{
+							case 'A' : $this->gameid = $inst->gameid; break;
+							case 'G' : $this->stopped = false; break;
+							case 'S' : $this->stopped = true; break;
+							default: $commands[]=$inst;
+						}
 
-						case 'S':
-							$this->stopped = true;
-							echo "Received 'STOP' order !\n";
-							break;
+						break;
 					}
 				}
 
-				return $this;
+				return $commands;
 			}
 
 			public function addLine($x1, $y1, $x2, $y2, $color = null)
