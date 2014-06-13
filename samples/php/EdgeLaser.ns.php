@@ -106,8 +106,10 @@
 
 				$data=$socket->read(2);
 
-				$this->player = unpack('C1', $data[0]);
-				$this->key = unpack('C1', $data[1]);
+				$this->player = unpack('C1', $data[0])[1];
+				$this->key = unpack('C1', $data[1])[1];
+
+				echo "Player $this->player Key $this->key\n";
 
 				return true;
 
