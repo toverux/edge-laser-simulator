@@ -17,11 +17,6 @@
 	$p2posx = 480;
 	$p2posy = 450;
 
-	while($game->isStopped())
-	{
-		$game->receiveServerCommands();
-	}
-
 	while(true)
 	{
 		$commands = $game->receiveServerCommands();
