@@ -28,6 +28,12 @@ Ce repo contient le kit de développement nécessaire, à savoir :
 Dans votre navigateur, la liste des clients a du être mise à jour. Et par exemple, si vous lancez plusieurs fois le script PHP dans des consoles différentes, la liste contiendra plusieurs fois le même jeu. Vous êtes alors habilité à changer de jeu à la volonté.
 Changer de jeu impliquera l'envoi de la commande STOP au jeu en cours et l'envoi de la commande GO au jeu visé.
 
+##Gestion des touches
+La gestion des touches est multi-touches et les boutons des deux manettes XBOX sont mappés sur le clavier selon le schéma suivant.
+![xbox-mapped-keyboard](http://alembic-dev.com/dl/edgefest/kbd.png)
+
+Pour que les touches soient capturées, c'est le visualisateur JavaScript qui doit avoir le focus (la fenêtre de visualisation ouverte dans votre navigateur).
+
 ##EdgeLaserPHP
 EdgeLaserPHP est une petite librairie contenue dans le fichier edge-laser-simulator/samples/php/EdgeLaser.ns.php
 Elle permet de se libérer de la couche réseau et du protocole lors du développement d'un jeu en PHP pour l'"Edge Laser".
@@ -66,32 +72,51 @@ while(true)
 ```
 
 ####Liste des méthodes
-#####LaserGame setResolution(int $resolutionXY)
+#####LaserGame LaserGame::setResolution(int $resolutionXY)
 Définit la résolution virtuelle pour cette instance de jeu
 
-#####LaserGame setDefaultColor(LaserColor::int $color)
+#####LaserGame LaserGame::setDefaultColor(LaserColor::int $color)
 Définit la couleur par défaut des formes (cf. référence des couleurs)
 
-#####bool isStopped()
+#####bool LaserGame::isStopped()
 Permet de savoir si l'instance de jeu a été stoppée par le serveur. Dans le cadre d'un pause(), cette valeur n'est PAS mise à true car pause() est une décision client et non serveur.
 
-#####LaserGame receiveServerCommands()
+#####LaserGame LaserGame::receiveServerCommands()
 Permet de mettre à jour les requêtes serveur (ACK, STOP, GO). **Obligatoire**.
 
-#####LaserGame addLine(int $x1, int $y1, int $x2, int $y2 [, LaserColor::int $color])
+#####LaserGame LaserGame::addLine(int $x1, int $y1, int $x2, int $y2 [, LaserColor::int $color])
 Trace une ligne selon les arguments donnés.
 
-#####LaserGame addCircle(int $x, int $y, int $diameter [, LaserColor::int $color])
+#####LaserGame LaserGame::addCircle(int $x, int $y, int $diameter [, LaserColor::int $color])
 Trace un cercle selon les arguments donnés.
 
-#####LaserGame addRectangle(int $x1, int $y1, int $x2, int $y2 [, LaserColor::int $color])
+#####LaserGame LaserGame::addRectangle(int $x1, int $y1, int $x2, int $y2 [, LaserColor::int $color])
 Trace un rectangle selon les arguments donnés.
 
-#####LaserGame refresh()
+#####LaserGame LaserGame::refresh()
 Envoie l'instruction REFRESH au serveur.
 
-#####LaserGame pause()
+#####LaserGame LaserGame::pause()
 Envoie l'instruction client STOP au serveur.
+
+#####array XboxKey::getKeys()
+Renvoie un array de int contenant les touches actuellement pressées.
+Les valeurs int de cet array peuvent être comparées aux constantes de la classe abstraite XboxKey, Cf. annexe des touches plus bas.
+
+**Exemple :**
+```php
+foreach(XboxKey::getKeys() as $key)
+{
+	switch($key)
+	{
+		case XboxKey::P1_ARROW_UP : $p1posy -= 5; break;
+		case XboxKey::P1_ARROW_LEFT : $p1posx -= 5; break;
+		case XboxKey::P1_ARROW_DOWN : $p1posy += 5; break;
+		case XboxKey::P1_ARROW_RIGHT : $p1posx += 5; break;
+	}
+}
+```
+
 
 ####Annexe des couleurs
 Liste des couleurs disponibles :
@@ -103,3 +128,19 @@ Liste des couleurs disponibles :
 * `LaserColor::FUCHSIA`
 * `LaserColor::CYAN`
 * `LaserColor::WHITE`
+
+####Annexe des touches
+Liste des couleurs disponibles :
+**Note :** ici les 8 touches du joueur 1 sont représentées. Pour les touches du joueur 2, remplacer P1 par P2.
+
+*Touches directionnelles*
+* `XboxKey::P1_ARROW_UP`
+* `XboxKey::P1_ARROW_LEFT`
+* `XboxKey::P1_ARROW_DOWN`
+* `XboxKey::P1_ARROW_RIGHT`
+
+*Touches d'action*
+* `XboxKey::P1_X`
+* `XboxKey::P1_Y`
+* `XboxKey::P1_A`
+* `XboxKey::P1_B`
