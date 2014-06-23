@@ -2,7 +2,7 @@
 
 	/* EdgeLaserPHP
 	 * Version: 0.1
-	 * Author: Morgan Touverey-Quilling (morgan-linux) */
+	 * Authors: Morgan Touverey-Quilling (morgan-linux) && Yannick Jost */
 
 	namespace EdgeLaser
 	{
@@ -18,7 +18,7 @@
 					$this->sock = $socket;
 			}
 
-			public function bytesAvail()
+			public function bytesAvailable()
 			{
 				$this->getFromSocket();
 				return strlen($this->internalBuffer);
@@ -32,7 +32,6 @@
 				if ($read > 0)
 				{
 					$this->internalBuffer.= $tmp;
-					// echo "Got $read from socket\n";
 				}
 
 			}
@@ -42,17 +41,13 @@
 					$buffer='';
 					$size=0;
 
-					// echo "want to read $byteCount\n";
-
-					while($this->bytesAvail() < $byteCount)
+					while($this->bytesAvailable() < $byteCount)
 					{
 							;
 					}
 
 					$buffer = substr($this->internalBuffer,0,$byteCount);
 					$this->internalBuffer = substr($this->internalBuffer,$byteCount);
-
-					// echo "read : '".$buffer."'\n";
 
 					return $buffer;
 			}
@@ -62,34 +57,22 @@
 				$buffer='';
 				$size=0;
 
-				// echo "want to peek $byteCount\n";
-
-				while($this->bytesAvail() < $byteCount)
+				while($this->bytesAvailable() < $byteCount)
 				{
 						;
 				}
 
 				$buffer = substr($this->internalBuffer,0,$byteCount);
 
-				// echo "peek : '".$buffer."'\n";
-
 				return $buffer;
 			}
 
 		}
 
-		class AbstractCommand
-		{
-			public function parse($socket)
-			{
-				return false;
-			}
-		}
-
 		class PlayerKeyCommand
 		{
 
-			public $key;
+			public $keys;
 			public $player;
 			public $type;
 
@@ -97,22 +80,38 @@
 			{
 				$this->type = chr(unpack('C', $socket->peek(1))[1]);
 
-				if($this->type!='K')
-				{
+				if($this->type != 'I')
 					return false;
-				}
 
 				$socket->read(1);
 
-				$data=$socket->read(2);
+				$this->keys = array();
 
-				$this->player = unpack('C1', $data[0])[1];
-				$this->key = unpack('C1', $data[1])[1];
+				$keysbin = unpack('v', $socket->read(2))[1];
 
-				echo "Player $this->player Key $this->key\n";
+				//Player 1
+				if($keysbin & 32768) $this->keys[] = XboxKey::P1_ARROW_RIGHT;
+				if($keysbin & 16384) $this->keys[] = XboxKey::P1_ARROW_LEFT;
+				if($keysbin & 8192)  $this->keys[] = XboxKey::P1_ARROW_UP;
+				if($keysbin & 4096)  $this->keys[] = XboxKey::P1_ARROW_DOWN;
+				if($keysbin & 2048)  $this->keys[] = XboxKey::P1_X;
+				if($keysbin & 1024)  $this->keys[] = XboxKey::P1_Y;
+				if($keysbin & 512)   $this->keys[] = XboxKey::P1_A;
+				if($keysbin & 256)   $this->keys[] = XboxKey::P1_B;
+
+				//Player 2
+				if($keysbin & 128) $this->keys[] = XboxKey::P2_ARROW_RIGHT;
+				if($keysbin & 64)  $this->keys[] = XboxKey::P2_ARROW_LEFT;
+				if($keysbin & 32)  $this->keys[] = XboxKey::P2_ARROW_UP;
+				if($keysbin & 16)  $this->keys[] = XboxKey::P2_ARROW_DOWN;
+				if($keysbin & 8)   $this->keys[] = XboxKey::P2_X;
+				if($keysbin & 4)   $this->keys[] = XboxKey::P2_Y;
+				if($keysbin & 2)   $this->keys[] = XboxKey::P2_A;
+				if($keysbin & 1)   $this->keys[] = XboxKey::P2_B;
+
+				XboxKey::$keys = $this->keys;
 
 				return true;
-
 			}
 		}
 
@@ -126,15 +125,13 @@
 			{
 				$this->type = chr(unpack('C', $socket->peek(1))[1]);
 
-				if($this->type!='A')
-				{
+				if($this->type != 'A')
 					return false;
-				}
 
 				$socket->read(1);
 
 
-				$data=$socket->read(1);
+				$data = $socket->read(1);
 
 				$this->gameid = unpack('C', $data)[1];
 
@@ -152,10 +149,8 @@
 			{
 				$this->type = chr(unpack('C', $socket->peek(1))[1]);
 
-				if($this->type!='G')
-				{
+				if($this->type != 'G')
 					return false;
-				}
 
 				$socket->read(1);
 
@@ -171,16 +166,15 @@
 			{
 				$this->type = chr(unpack('C', $socket->peek(1))[1]);
 
-				if($this->type!='S')
-				{
+				if($this->type != 'S')
 					return false;
-				}
 
 				$socket->read(1);
 
 				return true;
 			}
 		}
+
 
 		class LaserGame
 		{
@@ -209,7 +203,6 @@
 				$this->sendCMD($cmd);
 
 				$this->socket = new Socket($this->sock);
-
 			}
 
 			private function sendCMD($binary)
@@ -240,14 +233,17 @@
 			{
 				$commands = array();
 
-				// echo "1";
-
-				if(!$this->socket->bytesAvail())
+				if(!$this->socket->bytesAvailable())
 				{
 					return $commands;
 				}
 
-				foreach(array('EdgeLaser\PlayerKeyCommand', 'EdgeLaser\GoCommand', 'EdgeLaser\StopCommand', 'EdgeLaser\AckCommand') as $class)
+				foreach(array(
+					'EdgeLaser\PlayerKeyCommand',
+					'EdgeLaser\GoCommand',
+					'EdgeLaser\StopCommand',
+					'EdgeLaser\AckCommand')
+				as $class)
 				{
 					$inst = new $class();
 
@@ -346,6 +342,34 @@
 			const FUCHSIA = 0x5;
 			const CYAN = 0x6;
 			const WHITE = 0x7;
+		}
+
+		abstract class XboxKey
+		{
+			public static $keys;
+
+			const P1_ARROW_LEFT = 0x1;
+			const P1_ARROW_RIGHT = 0x2;
+			const P1_ARROW_UP = 0x3;
+			const P1_ARROW_DOWN = 0x4;
+			const P1_X = 0x5;
+			const P1_Y = 0x6;
+			const P1_A = 0x7;
+			const P1_B = 0x8;
+
+			const P2_ARROW_LEFT = 0x9;
+			const P2_ARROW_RIGHT = 0x10;
+			const P2_ARROW_UP = 0x11;
+			const P2_ARROW_DOWN = 0x12;
+			const P2_X = 0x13;
+			const P2_Y = 0x14;
+			const P2_A = 0x15;
+			const P2_B = 0x16;
+
+			public static function getKeys()
+			{
+				return self::$keys;
+			}
 		}
 	}
 

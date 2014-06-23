@@ -174,14 +174,60 @@ function refresh() {
 
 }
 
+
+//Keylogger
+var keys = {};
+var keys_precedent = {};
+
+$(document).keydown(function (e) {
+	keys_precedent = clone(keys);
+	keys[e.which] = true;
+
+	if(JSON.stringify(keys) !== JSON.stringify(keys_precedent)) {
+		sendMessage({
+			type: 'KeyStroke',
+			keys: keys
+		});
+	}
+});
+
+$(document).keyup(function (e) {
+	delete keys[e.which];
+	sendMessage({
+		type: 'KeyStroke',
+		keys: keys
+	});
+});
+
+
+//Log message on pseudo-teletype
 function log(msg) {
 	$('#log').html($('#log').html() + msg + '<br>');
 	$("#log").animate({ scrollTop: $("#log").prop("scrollHeight") }, 10);
 }
 
+
+//Get framerate
 setInterval(function() {
 
 	$('#fps_simu').html(nrefresh*2);
 	nrefresh = 0;
 
 }, 500);
+
+
+//JavaScript is soooooo limited :'(((((
+//This is the fastest way to clone an object :/
+function clone(obj) {
+
+	var target = {};
+
+	for (var i in obj) {
+		if (obj.hasOwnProperty(i)) {
+			target[i] = obj[i];
+		}
+	}
+
+	return target;
+
+}

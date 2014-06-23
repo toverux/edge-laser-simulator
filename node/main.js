@@ -5,8 +5,7 @@ var simulator = require('./Simulator.js');
 var clientManager = require('./Client.js');
 var action = require('./Action.js');
 var validator = require('./ActionValidator.js');
-var winkeyboard = require('./WindowsianKeyboard.js'); // Linux/Mac/Windows compatible kbd listener (SLOW)
-var nuxkeyboard = require('./LinuxianKeyboard.js');   // Linux compatible kbd listener (recommended) // Not implemented yet
+var keyboard = require('./Keyboard.js')
 
 var server = dgram.createSocket('udp4');
 
@@ -41,5 +40,3 @@ server.on('message', function (message, remote) {
 
 
 server.bind(PORT, HOST);
-
-winkeyboard.bind();

@@ -23,7 +23,7 @@ exports.parse = function(rawaction) {
 			return {
 				type: 'AskingForId',
 				gameId: gameId,
-				gameName: parameters.slice(0, rawaction.length-1).toString('ascii'),
+				gameName: parameters.slice(0, rawaction.length-3).toString('ascii'),
 				closingChar: rawaction.readUInt8(rawaction.length-1)
 			}
 			break;
@@ -151,20 +151,13 @@ exports.execute = function(action, client) {
 			currentClient = null;
 			break;
 
-		case 'KeyPress':
+		case 'KeyStroke':
 			if(client != null) {
 
-				if(action.keycode > 0) {
-
-					message = new Buffer(3);
-					message.write('K', 0, 1, 'ascii');
-					message.writeUInt8(action.player, 1);
-					message.writeUInt8(action.keycode, 2);
-					server.send(message, 0, message.length, client.port, client.address);
-
-				}
-
-				else stopGame(client.gameId);
+				message = new Buffer(3);
+				message.write('I', 0, 1, 'ascii');
+				message.writeUInt16LE(action.keysbin, 1);
+				server.send(message, 0, message.length, client.port, client.address);
 
 			}
 
@@ -220,6 +213,8 @@ exports.pause = function() {
 
 	if(currentClient != null)
 		exports.stopGame(currentClient.gameId);
+	else
+		logger.log('INFO No game running, no game to pause')
 
 }
 

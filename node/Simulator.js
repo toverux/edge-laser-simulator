@@ -2,6 +2,7 @@ var WebSocketServer = require('websocket').server;
 var http = require('http');
 var actionManager = require('./Action.js');
 var clientManager = require('./Client.js');
+var kbd = require('./Keyboard.js');
 
 var server = http.createServer(function(request, response) {});
 
@@ -39,6 +40,10 @@ wsServer.on('request', function(request) {
 
 			case 'PauseCurrentGame':
 				actionManager.pause();
+				break;
+
+			case 'KeyStroke':
+				actionManager.execute(kbd.format(action));
 				break;
 
 			default:
