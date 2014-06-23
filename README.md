@@ -44,6 +44,7 @@ include('EdgeLaser.ns.php');
 
 use EdgeLaser\LaserGame;
 use EdgeLaser\LaserColor;
+use EdgeLaser\XboxKey; 
 ```
 
 ####Créer un nouveau jeu
