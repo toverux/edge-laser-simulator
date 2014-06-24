@@ -17,11 +17,15 @@ Ce repo contient le kit de développement nécessaire, à savoir :
 ##Installation
 * Clonez ou téléchargez ce repo en local
 * Installez Node.js dernière version
-* (Optionnel) PHP-CLI pour tester les exemples en PHP et/ou faire un jeu en PHP : `apt-get install php5-cli` sous Debian-like.
+* (Optionnel) PHP-CLI pour tester les exemples en PHP et/ou faire un jeu en PHP : `apt-get install php5-cli` sous Debian-like. **Attention a bien installer la dernière version de PHP (5.5 minimum).**
 * C'est bon !
 
 ###Installation sous Mac
-Certaines personnes ont rencontré des problèmes lors de l'exécution du script d'exemple sous Mac et Windows. Voilà comment corriger le problème (merci à *HANDYPRESS*).
+Certaines personnes ont rencontré des problèmes lors de l'exécution du script d'exemple sous Mac et Windows. Voilà comment corriger le problème.
+####Solution
+* Installer PHP depuis ce site : http://php-osx.liip.ch/
+* ...et en version 5.5 minimum !
+####Solution dernier recours ?
 * Installer MAMP (http://www.mamp.info/en/downloads/)
 * Ajouter un alias `phpmamp='/Applications/MAMP/bin/php/php5.5.10/bin/php'` à la fin du fichier .bash_profile pour exécuter le fichier php via l'environement MAMP.
 * Pour exécuter samples.php via le terminal, utiliser l'alias phpmamp au lieu de php, comme suit : `phpmamp shapes.php`
