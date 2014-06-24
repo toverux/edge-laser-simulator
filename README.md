@@ -25,6 +25,7 @@ Certaines personnes ont rencontré des problèmes lors de l'exécution du script
 ####Solution
 * Installer PHP depuis ce site : http://php-osx.liip.ch/
 * ...et en version 5.5 minimum !
+
 ####Solution dernier recours ?
 * Installer MAMP (http://www.mamp.info/en/downloads/)
 * Ajouter un alias `phpmamp='/Applications/MAMP/bin/php/php5.5.10/bin/php'` à la fin du fichier .bash_profile pour exécuter le fichier php via l'environement MAMP.
