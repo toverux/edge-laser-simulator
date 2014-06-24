@@ -219,6 +219,8 @@
 
 			public function setResolution($px)
 			{
+				$this->resolution = $px;
+
 				$this->multiplicator = floor(65535/$px);
 
 				return $this;
@@ -306,6 +308,9 @@
 
 			public function addLine($x1, $y1, $x2, $y2, $color = null)
 			{
+				$x1 = $x1 > $this->resolution ? $this->resolution : $x1; $x2 = $x2 > $this->resolution ? $this->resolution : $x2; $y1 = $y1 > $this->resolution ? $this->resolution : $y1; $y2 = $y2 > $this->resolution ? $this->resolution : $y2;
+				$x1 = $x1 < 0 ? 0 : $x1; $x2 = $x2 < 0 ? 0 : $x2; $y1 = $y1 < 0 ? 0 : $y1; $y2 = $y2 < 0 ? 0 : $y2;
+
 				$m = $this->multiplicator;
 				$color = is_null($color) ? $this->color : $color;
 
@@ -323,6 +328,9 @@
 
 			public function addCircle($x, $y, $diameter, $color = null)
 			{
+				$x = $x > $this->resolution ? $this->resolution : $x; $y = $y > $this->resolution ? $this->resolution : $y;
+				$x = $x < 0 ? 0 : $x; $y = $y < 0 ? 0 : $y;
+
 				$m = $this->multiplicator;
 				$color = is_null($color) ? $this->color : $color;
 
@@ -339,6 +347,9 @@
 
 			public function addRectangle($x1, $y1, $x2, $y2, $color = null)
 			{
+				$x1 = $x1 > $this->resolution ? $this->resolution : $x1; $x2 = $x2 > $this->resolution ? $this->resolution : $x2; $y1 = $y1 > $this->resolution ? $this->resolution : $y1; $y2 = $y2 > $this->resolution ? $this->resolution : $y2;
+				$x1 = $x1 < 0 ? 0 : $x1; $x2 = $x2 < 0 ? 0 : $x2; $y1 = $y1 < 0 ? 0 : $y1; $y2 = $y2 < 0 ? 0 : $y2;
+
 				$m = $this->multiplicator;
 				$color = is_null($color) ? $this->color : $color;
 
