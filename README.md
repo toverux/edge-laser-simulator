@@ -17,8 +17,14 @@ Ce repo contient le kit de développement nécessaire, à savoir :
 ##Installation
 * Clonez ou téléchargez ce repo en local
 * Installez Node.js dernière version
-* (Optionnel) PHP-Cli pour tester les exemples en PHP et/ou faire un jeu en PHP : `apt-get install php5-cli` sous Debian-like.
+* (Optionnel) PHP-CLI pour tester les exemples en PHP et/ou faire un jeu en PHP : `apt-get install php5-cli` sous Debian-like.
 * C'est bon !
+
+###Installation sous Mac
+Certaines personnes ont rencontré des problèmes lors de l'exécution du script d'exemple sous Mac et Windows. Voilà comment corriger le problème (merci à *HANDYPRESS*).
+* Installer MAMP (http://www.mamp.info/en/downloads/)
+* Ajouter un alias `phpmamp='/Applications/MAMP/bin/php/php5.5.10/bin/php'` à la fin du fichier .bash_profile pour exécuter le fichier php via l'environement MAMP.
+* Pour exécuter samples.php via le terminal, utiliser l'alias phpmamp au lieu de php, comme suit : `phpmamp shapes.php`
 
 ##Run the sauce
 * `node main.js` dans edge-laser-simulator/node
@@ -57,7 +63,7 @@ $game->setResolution(500)->setDefaultColor(LaserColor::LIME);
 * `setDefaultColor` **est facultatif** et permet d'appliquer une couleur de base aux objets ajoutés plus tard qui n'auraient pas de couleur renseignée.
 
 ####Ingame
-Le code de base d'une boucle de jeu sous EdgeLaserPHP est la suivante :
+Le code de base d'une boucle de jeu sous EdgeLaserPHP est le suivant :
 
 ```php
 while(true)
@@ -76,8 +82,17 @@ while(true)
 #####LaserGame LaserGame::setResolution(int $resolutionXY)
 Définit la résolution virtuelle pour cette instance de jeu
 
-#####LaserGame LaserGame::setDefaultColor(LaserColor::int $color)
+#####LaserGame LaserGame::setDefaultColor(int LaserColor::$color)
 Définit la couleur par défaut des formes (cf. référence des couleurs)
+
+#####LaserGame LaserGame::setFramerate(int $fps)
+Définit le nombre de FPS du jeu. Le nombre de FPS sera fixe, à condition que la boucle de jeu soit assez rapide pour tenir le rythme que vous choisissez.
+
+#####void LaserGame::newFrame()
+Si vous souhaitez laisser EdgeLaserPHP gérer vos FPS et que vous avez appelé précedemment setFramerate(), cette fonction doit être appelée en **début** de votre boucle de jeu, avant la première instruction.
+
+#####void LaserGame::endFrame()
+Si vous souhaitez laisser EdgeLaserPHP gérer vos FPS et que vous avez appelé précedemment setFramerate() et newFrame() en début de boucle de jeu, cette fonction doit être appelée en **fin** de votre boucle de jeu, elle doit donc être la toute dernière instruction. Cette fonction imposera la pause nécessaire au jeu pour atteindre le nombre de FPS demandés.
 
 #####bool LaserGame::isStopped()
 Permet de savoir si l'instance de jeu a été stoppée par le serveur. Dans le cadre d'un pause(), cette valeur n'est PAS mise à true car pause() est une décision client et non serveur.
@@ -85,13 +100,13 @@ Permet de savoir si l'instance de jeu a été stoppée par le serveur. Dans le c
 #####LaserGame LaserGame::receiveServerCommands()
 Permet de mettre à jour les requêtes serveur (ACK, STOP, GO). **Obligatoire**.
 
-#####LaserGame LaserGame::addLine(int $x1, int $y1, int $x2, int $y2 [, LaserColor::int $color])
+#####LaserGame LaserGame::addLine(int $x1, int $y1, int $x2, int $y2 [, int LaserColor::$color])
 Trace une ligne selon les arguments donnés.
 
-#####LaserGame LaserGame::addCircle(int $x, int $y, int $diameter [, LaserColor::int $color])
+#####LaserGame LaserGame::addCircle(int $x, int $y, int $diameter [, int LaserColor::$color])
 Trace un cercle selon les arguments donnés.
 
-#####LaserGame LaserGame::addRectangle(int $x1, int $y1, int $x2, int $y2 [, LaserColor::int $color])
+#####LaserGame LaserGame::addRectangle(int $x1, int $y1, int $x2, int $y2 [, int LaserColor::$color])
 Trace un rectangle selon les arguments donnés.
 
 #####LaserGame LaserGame::refresh()

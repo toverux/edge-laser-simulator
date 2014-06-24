@@ -181,12 +181,19 @@
 			const HOST = '127.0.0.1';
 			const PORT = 4242;
 
+			//Game management
 			private $gameid;
 			private $gamename;
 			private $sock;
 			private $stopped;
+			//Display
 			private $multiplicator;
 			private $color;
+			//Framerate control
+			private $fps;
+			private $frame_durata;
+			private $ticks_base;
+			private $frame_start_ticks;
 
 			public function __construct($gameName)
 			{
@@ -222,6 +229,38 @@
 				$this->color = $color;
 
 				return $this;
+			}
+
+			public function setFramerate($fps)
+			{
+				$this->fps = $fps;
+
+				$this->frame_durata = 1000 / $fps;
+
+				$this->ticks_base = gettimeofday(true);
+
+				if($fps > 20)
+					echo '[EdgeLaserPHP] WARNING - It is NOT recommended to set a framerate higher than 20~25 FPS.' . PHP_EOL;
+
+				return $this;
+			}
+
+			public function newFrame()
+			{
+				$this->frame_start_ticks = $this->getTicks();
+			}
+
+			public function endFrame()
+			{
+				usleep(($this->frame_durata - ($this->getTicks() - $this->frame_start_ticks)) * 1000);
+			}
+
+			public function getTicks()
+			{
+				$diff = gettimeofday(true) - $this->ticks_base;
+				$diff = explode('.', $diff);
+				$diff = $diff[0] * 1000 + substr($diff[1], 0, 3);
+				return $diff;
 			}
 
 			public function isStopped()
@@ -346,7 +385,7 @@
 
 		abstract class XboxKey
 		{
-			public static $keys;
+			public static $keys = array();
 
 			const P1_ARROW_LEFT = 0x1;
 			const P1_ARROW_RIGHT = 0x2;

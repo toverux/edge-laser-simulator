@@ -8,7 +8,7 @@
 
 	$game = new LaserGame('SuperTetris');
 
-	$game->setResolution(500)->setDefaultColor(LaserColor::LIME);
+	$game->setResolution(500)->setDefaultColor(LaserColor::LIME)->setFramerate(20);
 
 	//Testing variables
 	$coeff = 0;
@@ -23,7 +23,9 @@
 
 		if(!$game->isStopped())
 		{
-			foreach(XboxKey::getKeys() as $key)
+			$game->newFrame(); //Used for framerate control
+
+			foreach(XboxKey::getKeys() as $key) //Pressed keys
 			{
 				switch($key)
 				{
@@ -53,7 +55,7 @@
 				->addRectangle(10, 10, $coeff, $coeff)
 				->refresh();
 
-				usleep(50000); //Some calculations
+			$game->endFrame(); //Used for framerate control
 		}
 	}
 
