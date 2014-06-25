@@ -83,7 +83,7 @@ exports.parse = function(rawaction) {
 		case 'I':
 			exports.execute({
 				type: 'XBOXAction',
-				keysbin: parameters.readUInt16LE(0);
+				keysbin: parameters.readUInt16LE(0)
 			});
 			return false;
 			break;
