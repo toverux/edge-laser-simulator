@@ -80,6 +80,14 @@ exports.parse = function(rawaction) {
 			}
 			break;
 
+		case 'I':
+			exports.execute({
+				type: 'XBOXAction',
+				keysbin: parameters.readUInt16LE(0);
+			});
+			return false;
+			break;
+
 		default:
 			return {
 				type: 'UnknownAction',
@@ -162,6 +170,17 @@ exports.execute = function(action, client) {
 			}
 
 			else logger.log('No client currently running - not sending your keystrokes');
+			break;
+
+		case 'XBOXAction':
+			if(client != null) {
+
+				message = new Buffer(3);
+				message.write('I', 0, 1, 'ascii');
+				message.writeUInt16LE(action.keysbin, 1);
+				server.send(message, 0, message.length, client.port, client.address);
+
+			}
 			break;
 
 	}

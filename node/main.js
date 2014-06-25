@@ -27,13 +27,15 @@ server.on('message', function (message, remote) {
 
 	clientaction = action.parse(message);
 
-	client = clientManager.get(clientaction.gameId, remote.address, remote.port);
+	if(clientaction) {
+		client = clientManager.get(clientaction.gameId, remote.address, remote.port);
 
-	logger.log('DATA ' + client.gameName + '#' + client.gameId + ' ' + message + ' // Decimal dump: ↵');
-	logger.log(message);
+		logger.log('DATA ' + client.gameName + '#' + client.gameId + ' ' + message + ' // Decimal dump: ↵');
+		logger.log(message);
 
-	if(validator.validate(clientaction, client)) {
-		action.execute(clientaction, client);
+		if(validator.validate(clientaction, client)) {
+			action.execute(clientaction, client);
+		}
 	}
 
 });

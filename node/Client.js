@@ -1,6 +1,7 @@
 var logger = require('./Logger.js');
 
 var clients = [];
+
 var baseGameId = 0;
 
 exports.get = function(gameId, address, port) {
