@@ -29,6 +29,11 @@ class HANDYGAME {
 
 	public function init() {
 
+
+    //START SCREEN
+    $this->timerColor_int = 30;
+    $this->timerColor = $this->timerColor_int;
+
 		$this->margin = 10;
 
 		//LEVELS
@@ -121,10 +126,138 @@ class HANDYGAME {
 
   public function startscreen(){
 
-    $this->writeSentence('SIMON LAZER',100,200,LaserColor::YELLOW,8);
-    $this->writeSentence('PRESS X TO PLAY',100,250,LaserColor::RED,4);
+    //$this->writeSentence('SIMON LAZER',100,200,LaserColor::YELLOW,8);
+    //$this->writeSentence('PRESS X TO PLAY',100,250,LaserColor::RED,4);
 
-    $this->writeSentence('BY YANNICK ARMSPACH',20,460,LaserColor::LIME,3);
+    //$this->writeSentence('BY YANNICK ARMSPACH',20,460,LaserColor::LIME,3);
+
+    if ( $this->timerColor == $this->timerColor_int ) $this->timerColor = 0;
+
+    $title_simon_color1 = LaserColor::BLUE;
+    $title_simon_color2 = LaserColor::BLUE;
+    $title_simon_color3 = LaserColor::BLUE;
+    $title_simon_color4 = LaserColor::BLUE;
+    $title_simon_color5 = LaserColor::BLUE;
+
+    if ( $this->timerColor == 1 ) $title_simon_color5 = LaserColor::CYAN;
+    if ( $this->timerColor == 2 ) $title_simon_color4 = LaserColor::CYAN;
+    if ( $this->timerColor == 3 ) $title_simon_color3 = LaserColor::CYAN;
+    if ( $this->timerColor == 4 ) $title_simon_color2 = LaserColor::CYAN;
+    if ( $this->timerColor == 5 ) $title_simon_color1 = LaserColor::CYAN;
+
+    // S
+    $this->game->addLine(54,244,54,224,$title_simon_color1);
+    $this->game->addLine(54,224,120,224,$title_simon_color1);
+    $this->game->addLine(120,224,120,220,$title_simon_color1);
+    $this->game->addLine(120,220,54,220,$title_simon_color1);
+    $this->game->addLine(54,220,54,177,$title_simon_color1);
+    $this->game->addLine(54,177,139,177,$title_simon_color1);
+    $this->game->addLine(139,177,139,197,$title_simon_color1);
+    $this->game->addLine(139,197,73,197,$title_simon_color1);
+    $this->game->addLine(73,197,73,201,$title_simon_color1);
+    $this->game->addLine(73,201,139,201,$title_simon_color1);
+    $this->game->addLine(139,201,139,244,$title_simon_color1);
+    $this->game->addLine(139,244,54,244,$title_simon_color1);
+    // I
+    $this->game->addLine(148,244,148,177,$title_simon_color2);
+    $this->game->addLine(148,177,167,177,$title_simon_color2);
+    $this->game->addLine(167,177,167,244,$title_simon_color2);
+    $this->game->addLine(167,244,148,244,$title_simon_color2);
+    // M
+    $this->game->addLine(176,244,176,174,$title_simon_color3);
+    $this->game->addLine(176,174,219,216,$title_simon_color3);
+    $this->game->addLine(219,216,262,174,$title_simon_color3);
+    $this->game->addLine(262,174,262,244,$title_simon_color3);
+    $this->game->addLine(262,244,242,244,$title_simon_color3);
+    $this->game->addLine(242,244,242,220,$title_simon_color3);
+    $this->game->addLine(242,220,219,244,$title_simon_color3);
+    $this->game->addLine(219,244,196,220,$title_simon_color3);
+    $this->game->addLine(196,220,196,244,$title_simon_color3);
+    $this->game->addLine(196,244,176,244,$title_simon_color3);
+    // O
+    $this->game->addLine(271,244,271,177,$title_simon_color4);
+    $this->game->addLine(271,177,356,177,$title_simon_color4);
+    $this->game->addLine(356,177,356,244,$title_simon_color4);
+    $this->game->addLine(356,244,271,244,$title_simon_color4);
+    $this->game->addLine(337,224,337,197,$title_simon_color4);
+    $this->game->addLine(337,197,290,197,$title_simon_color4);
+    $this->game->addLine(290,197,290,224,$title_simon_color4);
+    $this->game->addLine(290,224,337,224,$title_simon_color4);
+    // N
+    $this->game->addLine(384,201,384,244,$title_simon_color5);
+    $this->game->addLine(384,244,365,244,$title_simon_color5);
+    $this->game->addLine(365,244,365,154,$title_simon_color5);
+    $this->game->addLine(365,154,431,220,$title_simon_color5);
+    $this->game->addLine(431,220,431,177,$title_simon_color5);
+    $this->game->addLine(431,177,450,177,$title_simon_color5);
+    $this->game->addLine(450,177,450,267,$title_simon_color5);
+    $this->game->addLine(450,267,384,201,$title_simon_color5);
+
+
+    //line
+    $this->game->addLine(236,274,54,274,LaserColor::LIME);
+
+    // L
+    $this->game->addLine(251,285,251,261,LaserColor::LIME);
+    $this->game->addLine(251,261,257,261,LaserColor::LIME);
+    $this->game->addLine(257,261,257,278,LaserColor::LIME);
+    $this->game->addLine(257,278,281,278,LaserColor::LIME);
+    $this->game->addLine(281,278,281,285,LaserColor::LIME);
+    $this->game->addLine(281,285,251,285,LaserColor::LIME);
+    // A
+    $this->game->addLine(285,285,316,254,LaserColor::LIME);
+    $this->game->addLine(316,254,316,285,LaserColor::LIME);
+    $this->game->addLine(316,285,309,285,LaserColor::LIME);
+    $this->game->addLine(309,285,309,271,LaserColor::LIME);
+    $this->game->addLine(309,271,295,285,LaserColor::LIME);
+    $this->game->addLine(295,285,285,285,LaserColor::LIME);
+    // Z
+    $this->game->addLine(319,285,335,268,LaserColor::LIME);
+    $this->game->addLine(335,268,320,268,LaserColor::LIME);
+    $this->game->addLine(320,268,320,261,LaserColor::LIME);
+    $this->game->addLine(320,261,352,261,LaserColor::LIME);
+    $this->game->addLine(352,261,335,278,LaserColor::LIME);
+    $this->game->addLine(335,278,350,278,LaserColor::LIME);
+    $this->game->addLine(350,278,350,285,LaserColor::LIME);
+    $this->game->addLine(350,285,319,285,LaserColor::LIME);
+    //E
+    $this->game->addLine(355,285,355,261,LaserColor::LIME);
+    $this->game->addLine(355,261,385,261,LaserColor::LIME);
+    $this->game->addLine(385,261,385,268,LaserColor::LIME);
+    $this->game->addLine(385,268,362,268,LaserColor::LIME);
+    $this->game->addLine(362,268,362,269,LaserColor::LIME);
+    $this->game->addLine(362,269,385,269,LaserColor::LIME);
+    $this->game->addLine(385,269,378,276,LaserColor::LIME);
+    $this->game->addLine(378,276,362,276,LaserColor::LIME);
+    $this->game->addLine(362,276,362,278,LaserColor::LIME);
+    $this->game->addLine(362,278,385,278,LaserColor::LIME);
+    $this->game->addLine(385,278,385,285,LaserColor::LIME);
+    $this->game->addLine(385,285,355,285,LaserColor::LIME);
+    //R
+    $this->game->addLine(398,269,413,269,LaserColor::LIME);
+    $this->game->addLine(413,269,413,268,LaserColor::LIME);
+    $this->game->addLine(413,268,397,268,LaserColor::LIME);
+    $this->game->addLine(397,268,397,285,LaserColor::LIME);
+    $this->game->addLine(397,285,390,285,LaserColor::LIME);
+    $this->game->addLine(390,285,390,261,LaserColor::LIME);
+    $this->game->addLine(390,261,420,261,LaserColor::LIME);
+    $this->game->addLine(420,261,420,276,LaserColor::LIME);
+    $this->game->addLine(420,276,415,276,LaserColor::LIME);
+    $this->game->addLine(415,276,421,283,LaserColor::LIME);
+    $this->game->addLine(421,283,421,293,LaserColor::LIME);
+    $this->game->addLine(421,293,398,269,LaserColor::LIME);
+
+    // X (START)
+    if ( $this->timerColor < 20 ) $XbtSize = 5;
+    if ( $this->timerColor == 20 ) $XbtSize = 4;
+    if ( $this->timerColor == 25 ) $XbtSize = 3;
+    if ( $this->timerColor == 30 ) $XbtSize = 2;
+
+    $this->game->addLine(230-$XbtSize,390-$XbtSize,271+$XbtSize,431+$XbtSize,LaserColor::BLUE);
+    $this->game->addLine(229-$XbtSize,430+$XbtSize,271+$XbtSize,390-$XbtSize,LaserColor::BLUE);
+    $this->game->addCircle(250,410,88+$XbtSize+$XbtSize,LaserColor::BLUE);
+
+    $this->timerColor++;
 
   }
 
@@ -170,10 +303,40 @@ class HANDYGAME {
 
     }
 
+    /*
     $this->game->addRectangle(1, 1, 249, 249, LaserColor::YELLOW);
     $this->game->addRectangle(251, 1, 499, 249, LaserColor::RED);
     $this->game->addRectangle(1, 251, 249, 499, LaserColor::BLUE);
     $this->game->addRectangle(251, 251, 499, 499, LaserColor::GREEN);
+    */
+
+    $this->game->addLine(250,9,364,125,LaserColor::YELLOW);
+    $this->game->addLine(364,125,287,202,LaserColor::YELLOW);
+    $this->game->addLine(287,202,250,165,LaserColor::YELLOW);
+    $this->game->addLine(250,165,212,202,LaserColor::YELLOW);
+    $this->game->addLine(212,202,135,124,LaserColor::YELLOW);
+    $this->game->addLine(135,124,250,9,LaserColor::YELLOW);
+
+    $this->game->addLine(490,250,374,364,LaserColor::RED);
+    $this->game->addLine(374,364,297,287,LaserColor::RED);
+    $this->game->addLine(297,287,335,250,LaserColor::RED);
+    $this->game->addLine(335,250,297,212,LaserColor::RED);
+    $this->game->addLine(297,212,375,134,LaserColor::RED);
+    $this->game->addLine(375,134,490,250,LaserColor::RED);
+
+    $this->game->addLine(250,489,135,374,LaserColor::GREEN);
+    $this->game->addLine(135,374,212,297,LaserColor::GREEN);
+    $this->game->addLine(212,297,250,335,LaserColor::GREEN);
+    $this->game->addLine(250,335,287,297,LaserColor::GREEN);
+    $this->game->addLine(287,297,365,375,LaserColor::GREEN);
+    $this->game->addLine(365,375,250,489,LaserColor::GREEN);
+
+    $this->game->addLine(10,250,125,135,LaserColor::BLUE);
+    $this->game->addLine(125,135,202,212,LaserColor::BLUE);
+    $this->game->addLine(202,212,164,250,LaserColor::BLUE);
+    $this->game->addLine(164,250,202,287,LaserColor::BLUE);
+    $this->game->addLine(202,287,124,365,LaserColor::BLUE);
+    $this->game->addLine(124,365,10,250,LaserColor::BLUE);
 
   }
 
