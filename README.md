@@ -7,6 +7,10 @@ A NodeJS laser simulator for AlsaceDigitale/edgefest-hacking
 
 ##Sommaire
 [Installation du simulateur](#remarques)
+[Manette Xbox : mapping des touches](#gestion-des-touches)
+[EdgeLaserPHP (implé. PHP par morgan-linux)](#edgelaserphp)
+[EdgeLaserPython (implé. Python par Yannick Jost)](#edgelaserpython)
+[Format de fontes](#elf-fonts)
 
 ##Remarques
 Ceci est un serveur de test pour commencer à coder votre jeu pour l'"Edge Laser".
@@ -168,3 +172,29 @@ Liste des couleurs disponibles :
 * `XboxKey::P1_Y`
 * `XboxKey::P1_A`
 * `XboxKey::P1_B`
+
+##EdgeLaserPython
+EdgeLaserPython a été écrite par Yanncik Jost, organisateur du projet.
+Cette librairie Python est basée sur la librairie PHP, vous y trouverez donc quasiment les mêmes fonctions, avec les mêmes arguments.
+
+La librairie et le script d'exemple shapes.py sont inclus dans [samples](samples) mais vous pouvez peut-être trouver une version plus à jour sur le github de Y. Jost : [yanjost/edge-laser-python](https://github.com/yanjost/edge-laser-python).
+
+##ELF fonts
+Le format de fontes ELF (voir dans [samples/php/fonts](samples/php/fonts)) est un format conçu pour l'affichage de texte dans les jeux. Pour le moment, seules les librairies EdgeLaserPHP et EdgeLaserPython gèrent ce format.
+
+###Format de base ELF
+Les fontes sont d'abord écrites à la main dans un fichier .elf, chaque fonte ayant son fichier.
+
+###Format compilé ELFC
+Les fontes sont ensuite compilées via l'utilitaire Makefont : `./makefont.php fontname.elf`.
+Les données y sont ensuite compressées en GZIP.
+
+**Description du format :**
+* La première ligne contient 1 octet représentant un nombre, qui est l'espacement entre caractères.
+* Les lignes suivantes représentent un caractère.
+* Chaque ligne de caractère commence par un octet, qui est le caractère ASCII que l'on veut décrire, n'importe lequel, sans ordre imposé dans les lignes.
+* Après ce caractère ASCII commence la description des lignes de ce caractère.
+* Chaque ligne est représentée par quatre octets : x1, y1, x2, y2.
+* Chaque ligne est collée à l'autre.
+* Par exemple, codons le caractère ASCII 7 : 0x37-0x1-0x1-0x6-0x1-0x6-0x1-0x5-0xA : nous avons l'octet avec le code ASCII du caractère 7, suivi de 8 octets, donc le caractère 7 est composé ici de deux lignes.
+* Chaque ligne est séparée par un octet 0x0.
