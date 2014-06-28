@@ -175,10 +175,19 @@ exports.execute = function(action, client) {
 		case 'XBOXAction':
 			if(client != null) {
 
-				message = new Buffer(3);
-				message.write('I', 0, 1, 'ascii');
-				message.writeUInt16LE(action.keysbin, 1);
-				server.send(message, 0, message.length, client.port, client.address);
+				if(action.keysbin != 65280) {
+
+					message = new Buffer(3);
+					message.write('I', 0, 1, 'ascii');
+					message.writeUInt16LE(action.keysbin, 1);
+					server.send(message, 0, message.length, client.port, client.address);
+
+				} else {
+
+					exports.stopGame(client.gameId);
+					exports.startGame(client.gameId++);
+
+				}
 
 			}
 			break;

@@ -9,7 +9,7 @@ var keyboard = require('./Keyboard.js')
 
 var server = dgram.createSocket('udp4');
 
-var HOST = '127.0.0.1';
+var HOST = '0.0.0.0';
 var PORT = 4242;
 
 

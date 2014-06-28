@@ -382,6 +382,89 @@
 			}
 		}
 
+		class LaserFont
+		{
+			private $letters;
+			private $spacing;
+
+			public function __construct($filename)
+			{
+				$data = explode("\0", trim(gzuncompress(file_get_contents($filename)), "\0"));
+
+				echo '[EdgeLaserPHP] Font ' . basename($filename) . ' data loaded, now parsing.' . PHP_EOL;
+
+				$header = true;
+				foreach ($data as $line)
+				{
+					if($header)
+					{
+						$this->spacing = unpack('C', $line)[1];
+						$header = false;
+						continue;
+					}
+
+					$chars = str_split($line);
+					
+					$charnum = 0;
+					$line = 0;
+					$create_line = false;
+
+					$letter = true;
+					foreach ($chars as $char)
+					{
+						if($letter)
+						{
+							$lettername = chr(unpack('C', $char)[1]);
+							$letter = false;
+							continue;
+						}
+
+						if($create_line)
+						{
+							$line++;
+							$create_line = false;
+						}
+
+						$letter_lines[$lettername][$line][] = unpack('C', $char)[1];
+
+						if($charnum++ == 3)
+						{
+							$create_line = true;
+							$charnum = 0;
+						}
+					}
+				}
+
+				$this->letters = $letter_lines;
+
+				echo '[EdgeLaserPHP] Font ' . basename($filename) . ' ready-to-use, ' . (count($data) - 1) . ' chars, ' . $this->spacing . ' spacing' . PHP_EOL;
+			}
+
+			public function render(LaserGame $ctx, $text, $x, $y, $color, $coeff)
+			{
+				foreach(str_split($text) as $char)
+				{
+					if(isset($this->letters[$char]))
+					{
+						$xmax = 0;
+
+						foreach ($this->letters[$char] as $line)
+						{
+							if($line[2] > $xmax) $xmax = $line[2];
+
+							$ctx->addLine($line[0]*$coeff+$x, $line[1]*$coeff+$y, $line[2]*$coeff+$x, $line[3]*$coeff+$y, $color);
+						}
+
+						$x += $xmax*$coeff + $this->spacing*$coeff;
+					}
+					elseif ($char == ' ')
+					{
+						$x += $this->spacing * 2 * $coeff;
+					}
+				}
+			}
+		}
+
 		abstract class LaserColor
 		{
 			const RED = 0x1;

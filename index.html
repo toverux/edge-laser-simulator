@@ -4,6 +4,7 @@
 		<title>Edge Laser Simulator</title>
 		<script src="js/jquery-2.1.1.min.js"></script>
 		<script src="js/main.js"></script>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	</head>
 
 	<style>
@@ -97,7 +98,7 @@
 	#title small{
 		background-color:lime;
 		color:green;
-		line-height:10px;
+		line-height:20px;
 		border-radius:5px;
 		padding-left:5px;
 		padding-right:5px;
@@ -120,6 +121,14 @@
 	}
 	#pause:hover{
 		color:lime;
+	}
+	#pause span{
+		display:block;
+		width:300px;
+		margin:auto;
+		color:#333;
+		line-height:18px;
+		font-size: 13px;
 	}
 	#clients {
 		padding:5px;
@@ -155,7 +164,7 @@
 
 	<body>
 
-		<div id="title">Edge Laser Simulator <small>sim v.1.8</small> <small>protocol v.2.1</small></div>
+		<div id="title">Edge Laser Simulator <small>sim v.3.0</small> <small>protocol v.2.1</small></div>
 
 		<div id="simulator-container">
 
@@ -186,7 +195,10 @@
 
 		</div>
 
-		<a id="pause" href="javascript:pause()">|| Pause</a>
+		<a id="pause" href="javascript:pause()">
+			&#9632; Stop game
+			<span><i>Anciennement nommé 'Pause'. En fait, quand votre jeu reçoit l'instruction STOP, il doit se préparer à recevoir un GO pour lancer <b>une nouvelle partie</b>.</i></span>
+		</a>
 
 	</body>
 
