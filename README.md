@@ -127,6 +127,17 @@ Envoie l'instruction REFRESH au serveur.
 #####LaserGame LaserGame::pause()
 Envoie l'instruction client STOP au serveur.
 
+#####LaserFont LaserFont::__construct(string $filename)#####
+Charge la police ELFC au chemin d'accès donné et renvoie un pointeur vers cette police ce qui permettra de faire un render().
+
+#####void LaserFont::render(LaserGame $ctx, string $text, int $x, int $y, int int LaserColor::$color, int $coeff)#####
+Dessine le texte $text.
+* $ctx : référence vers le jeu de type LaserGame
+* $text : le texte à dessiner
+* $x, $y : coordonnées où écrire le texte
+* $color : une couleur de type LaserColor
+* $coeff : taille du texte (coefficient multiplicateur)
+
 #####array XboxKey::getKeys()
 Renvoie un array de int contenant les touches actuellement pressées.
 Les valeurs int de cet array peuvent être comparées aux constantes de la classe abstraite XboxKey, Cf. annexe des touches plus bas.
