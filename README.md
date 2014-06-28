@@ -6,11 +6,11 @@ A NodeJS laser simulator for AlsaceDigitale/edgefest-hacking
 ![alt text](http://i.imgur.com/2CVHDOs.png "Demo")
 
 ##Sommaire
-[Installation du simulateur](#remarques)
-[Manette Xbox : mapping des touches](#gestion-des-touches)
-[EdgeLaserPHP (implé. PHP par morgan-linux)](#edgelaserphp)
-[EdgeLaserPython (implé. Python par Yannick Jost)](#edgelaserpython)
-[Format de fontes](#elf-fonts)
+* [Installation du simulateur](#remarques)
+* [Manette Xbox : mapping des touches](#gestion-des-touches)
+* [EdgeLaserPHP (implé. PHP par morgan-linux)](#edgelaserphp)
+* [EdgeLaserPython (implé. Python par Yannick Jost)](#edgelaserpython)
+* [Format de fontes](#elf-fonts)
 
 ##Remarques
 Ceci est un serveur de test pour commencer à coder votre jeu pour l'"Edge Laser".
