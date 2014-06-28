@@ -454,7 +454,7 @@ Game = (function() {
 
 })();
 
-game = new Game('Tic Tac Toe (by @xcapetir)');
+game = new Game('Tic Tac Toe');
 
 game.start();
 
