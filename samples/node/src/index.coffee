@@ -311,7 +311,7 @@ class Game
 		if player is @board[2] and player is @board[4] and player is @board[6] then return true
 		return false
 
-game = new Game('Tic Tac Toe (by @xcapetir)')
+game = new Game('Tic Tac Toe')
 game.start()
 
 client.on 'message',  (message, remote) ->
