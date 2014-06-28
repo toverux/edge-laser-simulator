@@ -1,0 +1,20 @@
+{
+  "name": "EdgeLaser",
+  "version": "0.0.1",
+  "description": "Game for node with coffee",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "coffee"
+  ],
+  "author": {
+    "name": "Savier Carpentiert",
+    "email": "scontact@xavier-carpentier.com",
+    "url": "http://xaviercarpentier.com"
+  },
+  "dependencies": {
+    "coffee-script": "1"
+  }
+}
