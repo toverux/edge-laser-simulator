@@ -5,6 +5,9 @@ A NodeJS laser simulator for AlsaceDigitale/edgefest-hacking
 
 ![alt text](http://i.imgur.com/2CVHDOs.png "Demo")
 
+##Sommaire
+[Installation du simulateur](#remarques)
+
 ##Remarques
 Ceci est un serveur de test pour commencer à coder votre jeu pour l'"Edge Laser".
 Ce repo contient le kit de développement nécessaire, à savoir :
