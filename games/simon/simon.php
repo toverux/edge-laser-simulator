@@ -1,82 +1,115 @@
 <?php
 
-/*
-|
-|| HANDYPRESS
-|
-| # Game dev for the EdgeFest Strasbourg
-| @YannickArmspach
-|
-*/
-
 include('../../samples/php/EdgeLaser.ns.php');
 
 use EdgeLaser\LaserGame;
 use EdgeLaser\LaserColor;
 use EdgeLaser\XboxKey;
 
-class HANDYGAME {
+/*
+*
+* ---------
+* S I M O N  =>  EdgeFest 2014
+* ----lazer
+*
+* @desc : Lazer game for the EdgeFest @Strasbourg
+* @author : Yannick Armspach (yannick.armspach@gmail.com)
+* @version : 0.1
+*
+*/
+class SIMONLAZER {
 
+
+  /*
+  *
+  * ---------
+  * CONSTRUCT
+  * ---------
+  *
+  */
   public function __construct() {
 
+    //set lazer
 		$this->game = new LaserGame('simon');
 		$this->game->setResolution(500);
 		$this->game->setDefaultColor(LaserColor::LIME);
 
-		$this->init();
+    //set graphic
+    $this->setGraphics();
+
+    //set first screen
+    $this->screen = 'start';
+
+    //init start screen
+    $this->startInit();
+
+    //run game
+		$this->run();
 
 	}
 
-	public function init() {
+
+  /*
+  *
+  * ----
+  * RUN => init game var
+  * ----
+  *
+  */
+	public function run() {
+
+  		/*
+      | Level screen
+      */
+  		$this->levels = array(
+  			array("X","X","A","A"),
+  			array("X","B","B","B"),
+  			array("Y","B","Y","B"),
+  		);
+  		$this->levels_check = array(
+  			array(),
+  			array(),
+  			array(),
+  		);
+  		$this->levels_state = array(
+  			"uncomplete",
+  			"uncomplete",
+  			"uncomplete",
+  		);
+
+      $this->levelChecking = true;
+  		$this->ListenKey = true;
+  		$this->levelCheck = 0;
+  		$this->currentLevel = 0;
+  		$this->levelStep = 0;
+  		$this->userTap = array();
+  		$this->LevelSucces = false;
+  		//TIMER
+  		$this->timerDelay = 10;
+  		$this->timer = $this->timerDelay;
+  		//PLAYER
+  		$this->player['name'] = "simon";
+  		$this->player['levels'][$this->currentLevel] = 'uncomplete';
+      $this->levelInit();
+
+      /*
+      | Use
+      */
+      $this->margin = 10;
 
 
-    //START SCREEN
-    $this->timerColor_int = 30;
-    $this->timerColor = $this->timerColor_int;
-
-		$this->margin = 10;
-
-		//LEVELS
-		$this->levels = array(
-			array("X","X","A","A"),
-			array("X","B","B","B"),
-			array("Y","B","Y","B"),
-		);
-		$this->levels_check = array(
-			array(),
-			array(),
-			array(),
-		);
-		$this->levels_state = array(
-			"uncomplete",
-			"uncomplete",
-			"uncomplete",
-		);
-		$this->screen = 'start';
-    $this->levelChecking = true;
-		$this->ListenKey = true;
-		$this->levelCheck = 0;
-		$this->currentLevel = 0;
-		$this->levelStep = 0;
-		$this->userTap = array();
-		$this->LevelSucces = false;
-
-		//TIMER
-		$this->timerDelay = 10;
-		$this->timer = $this->timerDelay;
-
-		//PLAYER
-		$this->player['name'] = "simon";
-		$this->player['levels'][$this->currentLevel] = 'uncomplete';
-
-    //GAME
+    /*
+    |
+    | Init Game
+    |
+    */
 		while ( true ) {
 
       $commands = $this->game->receiveServerCommands();
 
       if ( ! $this->game->isStopped() ) {
 
-        $this->display($this->screen);
+        $this->display();
 
         $this->game->refresh();
         usleep(50000);
@@ -88,204 +121,196 @@ class HANDYGAME {
 
 	}
 
-  public function display($id){
 
-    switch ($id) {
+  /*
+  *
+  * -------
+  * DISPLAY => init and run screen
+  * -------
+  *
+  * $id : string : start,level,error,success
+  *
+  */
+  public function display(){
+
+    /*
+    | Execute current screen
+    */
+    switch ($this->screen) {
 
       case 'start':
 
+        //$this->levelInit();
+
         $this->menuControl();
-        $this->startscreen();
+        $this->startScreen();
 
       break;
 
       case 'level':
 
+        $this->startInit();
+
         //$this->menuControl();
-        $this->levelscreen();
+        $this->levelScreen();
 
       break;
 
       case 'error':
 
         $this->errorControl();
-        $this->errorcreen();
+        $this->errorrScreen();
 
       break;
 
       case 'success':
 
         $this->successControl();
-        $this->successcreen();
+        $this->succesScreen();
 
       break;
 
     }
 
+
   }
 
-  public function startscreen(){
+  /*
+  *
+  * ------------
+  * START INIT  => init screen
+  * ------------
+  *
+  */
+  public function startInit(){
 
-    //$this->writeSentence('SIMON LAZER',100,200,LaserColor::YELLOW,8);
-    //$this->writeSentence('PRESS X TO PLAY',100,250,LaserColor::RED,4);
+    $this->startScreen_int_loop = 35;
+    $this->startScreen_anim_init = true;
+    $this->timerColor = 0;
 
-    //$this->writeSentence('BY YANNICK ARMSPACH',20,460,LaserColor::LIME,3);
-
-    if ( $this->timerColor == $this->timerColor_int ) $this->timerColor = 0;
-
-    $title_simon_color1 = LaserColor::BLUE;
-    $title_simon_color2 = LaserColor::BLUE;
-    $title_simon_color3 = LaserColor::BLUE;
-    $title_simon_color4 = LaserColor::BLUE;
-    $title_simon_color5 = LaserColor::BLUE;
-
-    if ( $this->timerColor == 1 ) $title_simon_color5 = LaserColor::CYAN;
-    if ( $this->timerColor == 2 ) $title_simon_color4 = LaserColor::CYAN;
-    if ( $this->timerColor == 3 ) $title_simon_color3 = LaserColor::CYAN;
-    if ( $this->timerColor == 4 ) $title_simon_color2 = LaserColor::CYAN;
-    if ( $this->timerColor == 5 ) $title_simon_color1 = LaserColor::CYAN;
-
-    // S
-    $this->game->addLine(54,244,54,224,$title_simon_color1);
-    $this->game->addLine(54,224,120,224,$title_simon_color1);
-    $this->game->addLine(120,224,120,220,$title_simon_color1);
-    $this->game->addLine(120,220,54,220,$title_simon_color1);
-    $this->game->addLine(54,220,54,177,$title_simon_color1);
-    $this->game->addLine(54,177,139,177,$title_simon_color1);
-    $this->game->addLine(139,177,139,197,$title_simon_color1);
-    $this->game->addLine(139,197,73,197,$title_simon_color1);
-    $this->game->addLine(73,197,73,201,$title_simon_color1);
-    $this->game->addLine(73,201,139,201,$title_simon_color1);
-    $this->game->addLine(139,201,139,244,$title_simon_color1);
-    $this->game->addLine(139,244,54,244,$title_simon_color1);
-    // I
-    $this->game->addLine(148,244,148,177,$title_simon_color2);
-    $this->game->addLine(148,177,167,177,$title_simon_color2);
-    $this->game->addLine(167,177,167,244,$title_simon_color2);
-    $this->game->addLine(167,244,148,244,$title_simon_color2);
-    // M
-    $this->game->addLine(176,244,176,174,$title_simon_color3);
-    $this->game->addLine(176,174,219,216,$title_simon_color3);
-    $this->game->addLine(219,216,262,174,$title_simon_color3);
-    $this->game->addLine(262,174,262,244,$title_simon_color3);
-    $this->game->addLine(262,244,242,244,$title_simon_color3);
-    $this->game->addLine(242,244,242,220,$title_simon_color3);
-    $this->game->addLine(242,220,219,244,$title_simon_color3);
-    $this->game->addLine(219,244,196,220,$title_simon_color3);
-    $this->game->addLine(196,220,196,244,$title_simon_color3);
-    $this->game->addLine(196,244,176,244,$title_simon_color3);
-    // O
-    $this->game->addLine(271,244,271,177,$title_simon_color4);
-    $this->game->addLine(271,177,356,177,$title_simon_color4);
-    $this->game->addLine(356,177,356,244,$title_simon_color4);
-    $this->game->addLine(356,244,271,244,$title_simon_color4);
-    $this->game->addLine(337,224,337,197,$title_simon_color4);
-    $this->game->addLine(337,197,290,197,$title_simon_color4);
-    $this->game->addLine(290,197,290,224,$title_simon_color4);
-    $this->game->addLine(290,224,337,224,$title_simon_color4);
-    // N
-    $this->game->addLine(384,201,384,244,$title_simon_color5);
-    $this->game->addLine(384,244,365,244,$title_simon_color5);
-    $this->game->addLine(365,244,365,154,$title_simon_color5);
-    $this->game->addLine(365,154,431,220,$title_simon_color5);
-    $this->game->addLine(431,220,431,177,$title_simon_color5);
-    $this->game->addLine(431,177,450,177,$title_simon_color5);
-    $this->game->addLine(450,177,450,267,$title_simon_color5);
-    $this->game->addLine(450,267,384,201,$title_simon_color5);
+  }
 
 
-    //line
-    $this->game->addLine(236,274,54,274,LaserColor::LIME);
+  /*
+  *
+  * ------------
+  * START SCREEN  => screen loop
+  * ------------
+  *
+  */
+  public function startScreen(){
 
-    // L
-    $this->game->addLine(251,285,251,261,LaserColor::LIME);
-    $this->game->addLine(251,261,257,261,LaserColor::LIME);
-    $this->game->addLine(257,261,257,278,LaserColor::LIME);
-    $this->game->addLine(257,278,281,278,LaserColor::LIME);
-    $this->game->addLine(281,278,281,285,LaserColor::LIME);
-    $this->game->addLine(281,285,251,285,LaserColor::LIME);
-    // A
-    $this->game->addLine(285,285,316,254,LaserColor::LIME);
-    $this->game->addLine(316,254,316,285,LaserColor::LIME);
-    $this->game->addLine(316,285,309,285,LaserColor::LIME);
-    $this->game->addLine(309,285,309,271,LaserColor::LIME);
-    $this->game->addLine(309,271,295,285,LaserColor::LIME);
-    $this->game->addLine(295,285,285,285,LaserColor::LIME);
-    // Z
-    $this->game->addLine(319,285,335,268,LaserColor::LIME);
-    $this->game->addLine(335,268,320,268,LaserColor::LIME);
-    $this->game->addLine(320,268,320,261,LaserColor::LIME);
-    $this->game->addLine(320,261,352,261,LaserColor::LIME);
-    $this->game->addLine(352,261,335,278,LaserColor::LIME);
-    $this->game->addLine(335,278,350,278,LaserColor::LIME);
-    $this->game->addLine(350,278,350,285,LaserColor::LIME);
-    $this->game->addLine(350,285,319,285,LaserColor::LIME);
-    //E
-    $this->game->addLine(355,285,355,261,LaserColor::LIME);
-    $this->game->addLine(355,261,385,261,LaserColor::LIME);
-    $this->game->addLine(385,261,385,268,LaserColor::LIME);
-    $this->game->addLine(385,268,362,268,LaserColor::LIME);
-    $this->game->addLine(362,268,362,269,LaserColor::LIME);
-    $this->game->addLine(362,269,385,269,LaserColor::LIME);
-    $this->game->addLine(385,269,378,276,LaserColor::LIME);
-    $this->game->addLine(378,276,362,276,LaserColor::LIME);
-    $this->game->addLine(362,276,362,278,LaserColor::LIME);
-    $this->game->addLine(362,278,385,278,LaserColor::LIME);
-    $this->game->addLine(385,278,385,285,LaserColor::LIME);
-    $this->game->addLine(385,285,355,285,LaserColor::LIME);
-    //R
-    $this->game->addLine(398,269,413,269,LaserColor::LIME);
-    $this->game->addLine(413,269,413,268,LaserColor::LIME);
-    $this->game->addLine(413,268,397,268,LaserColor::LIME);
-    $this->game->addLine(397,268,397,285,LaserColor::LIME);
-    $this->game->addLine(397,285,390,285,LaserColor::LIME);
-    $this->game->addLine(390,285,390,261,LaserColor::LIME);
-    $this->game->addLine(390,261,420,261,LaserColor::LIME);
-    $this->game->addLine(420,261,420,276,LaserColor::LIME);
-    $this->game->addLine(420,276,415,276,LaserColor::LIME);
-    $this->game->addLine(415,276,421,283,LaserColor::LIME);
-    $this->game->addLine(421,283,421,293,LaserColor::LIME);
-    $this->game->addLine(421,293,398,269,LaserColor::LIME);
+    if ( $this->timerColor == $this->startScreen_int_loop ) $this->timerColor = 0;
 
-    // X (START)
-    if ( $this->timerColor < 20 ) $XbtSize = 5;
-    if ( $this->timerColor == 20 ) $XbtSize = 4;
-    if ( $this->timerColor == 25 ) $XbtSize = 3;
-    if ( $this->timerColor == 30 ) $XbtSize = 2;
+    //LOGO
+    //reflect fx
+    $this->graphic_LOGO[4][color] = LaserColor::BLUE;
+    $this->graphic_LOGO[3][color] = LaserColor::BLUE;
+    $this->graphic_LOGO[2][color] = LaserColor::BLUE;
+    $this->graphic_LOGO[1][color] = LaserColor::BLUE;
+    $this->graphic_LOGO[0][color] = LaserColor::BLUE;
+    if ( $this->timerColor == 13 ) $this->graphic_LOGO[4][color] = LaserColor::CYAN;
+    if ( $this->timerColor == 14 ) $this->graphic_LOGO[3][color] = LaserColor::CYAN;
+    if ( $this->timerColor == 15 ) $this->graphic_LOGO[2][color] = LaserColor::CYAN;
+    if ( $this->timerColor == 16 ) $this->graphic_LOGO[1][color] = LaserColor::CYAN;
+    if ( $this->timerColor == 17 ) $this->graphic_LOGO[0][color] = LaserColor::CYAN;
 
-    $this->game->addLine(230-$XbtSize,390-$XbtSize,271+$XbtSize,431+$XbtSize,LaserColor::BLUE);
-    $this->game->addLine(229-$XbtSize,430+$XbtSize,271+$XbtSize,390-$XbtSize,LaserColor::BLUE);
-    $this->game->addCircle(250,410,88+$XbtSize+$XbtSize,LaserColor::BLUE);
+    //slide In
+    if ( $this->startScreen_anim_init == true ){
+      if ( $this->timerColor == 1 ) $this->drawShape(50,0,1,$this->graphic_LOGO);
+      if ( $this->timerColor == 2 ) $this->drawShape(50,20,1,$this->graphic_LOGO);
+      if ( $this->timerColor == 3 ) $this->drawShape(50,40,1,$this->graphic_LOGO);
+      if ( $this->timerColor == 4 ) $this->drawShape(50,80,1,$this->graphic_LOGO);
+      if ( $this->timerColor == 5 ) $this->drawShape(50,100,1,$this->graphic_LOGO);
+      if ( $this->timerColor == 5 ) $this->startScreen_anim_init = false;
+    } else {
+      $this->drawShape(50,100,1,$this->graphic_LOGO);
+    }
+
+    //BT X
+    if ( $this->startScreen_anim_init == true ){
+      if ( $this->timerColor == 1 ) $this->drawShape(250,500,1.2,$this->graphic_BT_X);
+      if ( $this->timerColor == 2 ) $this->drawShape(250,410,1.2,$this->graphic_BT_X);
+      if ( $this->timerColor == 3 ) $this->drawShape(250,390,1.2,$this->graphic_BT_X);
+      if ( $this->timerColor == 4 ) $this->drawShape(250,370,1.2,$this->graphic_BT_X);
+      if ( $this->timerColor == 5 ) $this->drawShape(250,350,1.2,$this->graphic_BT_X);
+      if ( $this->timerColor == 5 ) $this->startScreen_anim_init = false;
+    } else {
+      if ( $this->timerColor <= 5 ) $this->drawShape(250,350,1.2,$this->graphic_BT_X);
+      if ( $this->timerColor == 6 ) $this->drawShape(250,350,1.1,$this->graphic_BT_X);
+      if ( $this->timerColor == 7 ) $this->drawShape(250,350,1,$this->graphic_BT_X);
+      if ( $this->timerColor == 8 ) $this->drawShape(250,350,1.1,$this->graphic_BT_X);
+      if ( $this->timerColor == 9 ) $this->drawShape(250,350,1.2,$this->graphic_BT_X);
+      if ( $this->timerColor == 10 ) $this->drawShape(250,350,1.1,$this->graphic_BT_X);
+      if ( $this->timerColor == 11 ) $this->drawShape(250,350,1,$this->graphic_BT_X);
+      if ( $this->timerColor == 12 ) $this->drawShape(250,350,1.1,$this->graphic_BT_X);
+      if ( $this->timerColor >= 13 ) $this->drawShape(250,350,1.2,$this->graphic_BT_X);
+    }
 
     $this->timerColor++;
 
   }
 
-  public function successcreen(){
+
+  /*
+  *
+  * --------------
+  * SUCCESS SCREEN  => screen loop
+  * --------------
+  *
+  */
+  public function succesScreen(){
 
     if ( count($this->levels) == $this->currentLevel+1 ) {
 
-      $this->writeSentence('BRAVO',100,200,LaserColor::GREEN,8);
-      $this->writeSentence('YOU BEAT SIMON',100,250,LaserColor::GREEN,4);
+      $this->drawText('BOOOOM|you|beat|simon',100,100,LaserColor::BLUE,1);
 
     } else {
 
-      $this->writeSentence('SUCCESS',100,200,LaserColor::GREEN,8);
-      $this->writeSentence('PRESS X TO PLAY NEXT LEVEL',100,250,LaserColor::RED,4);
+      $this->drawText('GREAT|you|beat|simon',50,50,LaserColor::BLUE,1);
+
+      $this->drawShape(400,400,1.2,$this->graphic_BT_X);
 
     }
 
   }
 
-  public function errorcreen(){
 
-    $this->writeSentence('ERROR',100,200,LaserColor::RED,8);
+  /*
+  *
+  * ------------
+  * ERROR SCREEN  => screen loop
+  * ------------
+  *
+  */
+  public function errorrScreen(){
+
+    //$this->drawText('ERROR',100,200,LaserColor::RED,8);
 
   }
 
 
+  /*
+  *
+  * ------------
+  * LEVEL INIT  => init screen
+  * ------------
+  *
+  */
+  public function levelInit(){
 
-  public function levelscreen(){
+
+
+  }
+
+  /*
+  *
+  * ------------
+  * LEVEL SCREEN  => screen loop
+  * ------------
+  *
+  */
+  public function levelScreen(){
 
     if ( count($this->levels[$this->currentLevel]) == count($this->levels_check[$this->currentLevel]) ) {
 
@@ -341,7 +366,13 @@ class HANDYGAME {
   }
 
 
-
+  /*
+  *
+  * ----------
+  * LEVEL PLAY  => next level if complete
+  * ----------
+  *
+  */
 	public function playLevel(){
 
 		if ( $this->levelStep < count( $this->levels[$this->currentLevel] ) ) {
@@ -372,6 +403,14 @@ class HANDYGAME {
 
 	}
 
+
+  /*
+  *
+  * ------------
+  * CONTROL MENU  => ...
+  * ------------
+  *
+  */
 	public function menuControl(){
 
    $keyListener = XboxKey::getKeys();
@@ -398,6 +437,14 @@ class HANDYGAME {
 
   }
 
+
+  /*
+  *
+  * ---------------
+  * CONTROL SUCCESS  => ...
+  * ---------------
+  *
+  */
   public function successControl(){
 
    $keyListener = XboxKey::getKeys();
@@ -419,8 +466,16 @@ class HANDYGAME {
 
    }
 
-  }
+ }
 
+
+  /*
+  *
+  * ---------------
+  * CONTROL XXXXXXX  => ...
+  * ---------------
+  *
+  */
   public function errorControl(){
 
    $keyListener = XboxKey::getKeys();
@@ -443,6 +498,14 @@ class HANDYGAME {
 
   }
 
+
+  /*
+  *
+  * ---------------
+  * XXXXXXX  => ...
+  * ---------------
+  *
+  */
   public function recordPress(){
 
 		$keyListener = XboxKey::getKeys();
@@ -493,6 +556,14 @@ class HANDYGAME {
 
 	}
 
+
+  /*
+  *
+  * ---------------
+  * XXXXXXX  => ...
+  * ---------------
+  *
+  */
 	public function checkPRESS($key){
 
 		if ( $this->levels[$this->currentLevel][$this->levelCheck] == $key ) {
@@ -511,362 +582,966 @@ class HANDYGAME {
 
 	}
 
+
+  /*
+  *
+  * ---------------
+  * XXXXXXX  => ...
+  * ---------------
+  *
+  */
 	public function PRESS($key) {
 
 		switch ( $key ) {
 
-			case 'Y':
-				$x1 = 0;
-				$y1 = 0;
-				$x2 = 250;
-				$y2 = 0;
-				$color = LaserColor::YELLOW;
+			case 'X':
+
+        $this->drawShape(125,250,1,$this->graphic_SIMON_PRESS);
+
 			break;
 
 			case 'B':
-				$x1 = 250;
-				$y1 = 0;
-				$x2 = 500;
-				$y2 = 0;
-				$color = LaserColor::RED;
-			break;
 
-			case 'X':
-				$x1 = 0;
-				$y1 = 250;
-				$x2 = 250;
-				$y2 = 250;
-				$color = LaserColor::BLUE;
+			  $this->drawShape(375,250,1,$this->graphic_SIMON_PRESS);
+
+      break;
+
+			case 'Y':
+
+        $this->drawShape(250,175,1,$this->graphic_SIMON_PRESS);
+
 			break;
 
 			case 'A':
-				$x1 = 250;
-				$y1 = 250;
-				$x2 = 500;
-				$y2 = 250;
-				$color = LaserColor::GREEN;
+
+        $this->drawShape(250,375,1,$this->graphic_SIMON_PRESS);
+
 			break;
 
 		}
 
-		$this->game
-		->addLine($x1+$this->margin, $y1+10, $x2-$this->margin, $y2+10, $color)
-		->addLine($x1+$this->margin, $y1+20, $x2-$this->margin, $y2+20, $color)
-		->addLine($x1+$this->margin, $y1+30, $x2-$this->margin, $y2+30, $color)
-		->addLine($x1+$this->margin, $y1+40, $x2-$this->margin, $y2+40, $color)
-		->addLine($x1+$this->margin, $y1+50, $x2-$this->margin, $y2+50, $color)
-		->addLine($x1+$this->margin, $y1+60, $x2-$this->margin, $y2+60, $color)
-		->addLine($x1+$this->margin, $y1+70, $x2-$this->margin, $y2+70, $color)
-		->addLine($x1+$this->margin, $y1+80, $x2-$this->margin, $y2+80, $color)
-		->addLine($x1+$this->margin, $y1+90, $x2-$this->margin, $y2+90, $color)
-		->addLine($x1+$this->margin, $y1+100, $x2-$this->margin, $y2+100, $color)
-		->addLine($x1+$this->margin, $y1+110, $x2-$this->margin, $y2+110, $color)
-		->addLine($x1+$this->margin, $y1+120, $x2-$this->margin, $y2+120, $color)
-		->addLine($x1+$this->margin, $y1+130, $x2-$this->margin, $y2+130, $color)
-		->addLine($x1+$this->margin, $y1+140, $x2-$this->margin, $y2+140, $color)
-		->addLine($x1+$this->margin, $y1+150, $x2-$this->margin, $y2+150, $color)
-		->addLine($x1+$this->margin, $y1+160, $x2-$this->margin, $y2+160, $color)
-		->addLine($x1+$this->margin, $y1+170, $x2-$this->margin, $y2+170, $color)
-		->addLine($x1+$this->margin, $y1+180, $x2-$this->margin, $y2+180, $color)
-		->addLine($x1+$this->margin, $y1+190, $x2-$this->margin, $y2+190, $color)
-		->addLine($x1+$this->margin, $y1+200, $x2-$this->margin, $y2+200, $color)
-		->addLine($x1+$this->margin, $y1+210, $x2-$this->margin, $y2+210, $color)
-		->addLine($x1+$this->margin, $y1+220, $x2-$this->margin, $y2+220, $color)
-		->addLine($x1+$this->margin, $y1+230, $x2-$this->margin, $y2+230, $color)
-		->addLine($x1+$this->margin, $y1+240, $x2-$this->margin, $y2+240, $color);
+
 
 	}
 
-  public function writeSentence($str,$str_x,$str_y,$color,$size) {
+  /*
+  *
+  * ----------
+  * DRAW SHAPE
+  * ----------
+  *
+  */
+  public function drawShape($x,$y,$zoom,$items){
 
-    $char_arr = str_split($str);
+    foreach ( $items as $item ) {
 
-    foreach ($char_arr as $key => $char) {
+      $color = $item['color'];
+      $type = $item['type'];
+      $origin = $item['origin'];
 
-      switch ($char) {
+      $bigX = 0;
+      $bigY = 0;
+      foreach ( $item['coord'] as $key => $coords ) {
 
-        case 'X':
-
-        break;
+          if ( $bigX < $coords[0] ) $bigX = $coords[0]*$zoom;
+          if ( $bigY1 < $coords[1] ) $bigY = $coords[1]*$zoom;
+          if ( $bigY < $coords[2] ) $bigX = $coords[2]*$zoom;
+          if ( $bigY < $coords[3] ) $bigY = $coords[3]*$zoom;
 
       }
 
-      $this->writeChar($char,$str_x+((4*$size)*$key),$str_y,$color,$size);
+      foreach ( $item['coord'] as $key => $coords  ) {
+
+        $x1 = $coords[0]*$zoom;
+        $y1 = $coords[1]*$zoom;
+        $x2 = $coords[2]*$zoom;
+        $y2 = $coords[3]*$zoom;
+
+        $x1 += $x;
+        $y1 += $y;
+        $x2 += $x;
+        $y2 += $y;
+
+        switch ( $origin ) {
+
+          case 'left':
+            if ( $type == 'circle' ) {
+              $x1 = $x1+($bigX/2);
+              $y1 = $y1+($bigY/2);
+              $x2 = $x2+($bigX/2);
+              $y2 = $y2+($bigY/2);
+            }
+          break;
+
+          case 'center':
+            if ( $type != 'circle' ) {
+              $x1 = $x1-($bigX/2);
+              $y1 = $y1-($bigY/2);
+              $x2 = $x2-($bigX/2);
+              $y2 = $y2-($bigY/2);
+            }
+          break;
+
+          case 'right':
+            $x1 = $x1-$bigX;
+            $y1 = $y1-$bigY;
+            $x2 = $x2-$bigX;
+            $y2 = $y2-$bigY;
+          break;
+
+        }
+
+        switch ($type) {
+
+          case 'line':
+            $this->game->addLine(floor($x1),floor($y1),floor($x2),floor($y2),$color);
+          break;
+
+          case 'rectangle':
+            $this->game->addRectangle(floor($x1),floor($y1),floor($x2),floor($y2),$color);
+          break;
+
+          case 'circle':
+            $dim = $coords[2]*$zoom;
+            if ( !$dim ) $dim = 20;
+            $this->game->addCircle(floor($x1),floor($y1),floor($dim),$color);
+          break;
+
+        }
+
+      }
 
     }
 
   }
 
-  public function writeChar($char,$posx,$posy,$color,$size) {
+
+  /*
+  *
+  * ---------
+  * DRAW TEXT
+  * ---------
+  *
+  */
+  public function drawText($str,$str_x,$str_y,$color,$size) {
+
+    $str = strtoupper( $str );
+
+    $lines = explode('|',$str);
+
+    foreach ( $lines as $key_line => $line) {
+
+      $chars = str_split($line);
+
+      $span = 0;
+      foreach ($chars as $key_char => $char) {
+
+        if ( $key_char != 0 && $chars[$key_char-1] == 'I' ) $span += -(30*$size);
+        if ( $key_char != 0 && $chars[$key_char-1] == 'W' ) $span += 20*$size;
+
+        $x = $str_x+(60*$size*$key_char)+$span;
+        $y = $str_y+(90*$size*$key_line);
+
+        $this->drawChar($char,floor($x) ,floor($y),$color,$size);
+
+      }
+
+    }
+
+  }
+  public function drawText2($str,$str_x,$str_y,$color,$size) {
+
+    $size = 1;
+
+    $lines = explode('|',$str);
+
+    foreach ( $lines as $key_line => $line) {
+
+      $chars = str_split($line);
+
+      $span = 0;
+      foreach ($chars as $key_char => $char) {
+
+        //if ( $key_char != 0 && $chars[$key_char-1] == 'I' ) $span += -(20*$size);
+        //if ( $key_char != 0 && $chars[$key_char-1] == 'W' ) $span += 10*$size;
+
+        $x = ((60*$size)*$key_char)+$span;
+        $y = (90*$size)*$key_line;
+
+        $x += $str_x;
+        $y += $str_y;
+
+        $this->drawChar($char,floor($x) ,floor($y),$color,$size);
+
+      }
+
+    }
+
+  }
+
+
+  /*
+  *
+  * --------------
+  * DRAW CHARACTER
+  * --------------
+  *
+  */
+  public function drawChar($char,$posx,$posy,$color,$size) {
 
     switch ($char) {
 
       case 'A':
 
-        $this->game
-        ->addLine($posx+(0*$size), $posy+(4*$size), $posx+(2*$size), $posy+(0*$size), $color)
-        ->addLine($posx+(2*$size), $posy+(0*$size), $posx+(4*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(1*$size), $posy+(2*$size), $posx+(3*$size), $posy+(2*$size), $color);
+        $coord = array(
+          array(35,40,13,40),
+          array(13,40,13,69),
+          array(13,69,0,69),
+          array(0,69,0,0),
+          array(0,0,48,0),
+          array(48,0,48,69),
+          array(48,69,35,69),
+          array(35,69,35,40),
+          array(13,11,13,29),
+          array(13,29,35,29),
+          array(35,29,35,11),
+          array(35,11,13,11),
+        );
 
       break;
 
       case 'B':
 
-        $this->game
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(0*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(2*$size), $posy+(0*$size), $color)
-        ->addLine($posx+(2*$size), $posy+(0*$size), $posx+(2*$size), $posy+(2*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(2*$size), $posx+(3*$size), $posy+(2*$size), $color)
-        ->addLine($posx+(3*$size), $posy+(2*$size), $posx+(3*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(4*$size), $posx+(3*$size), $posy+(4*$size), $color);
+        $coord = array(
+          array(48,0,48,26),
+          array(48,26,42,35),
+          array(42,35,48,43),
+          array(48,43,48,69),
+          array(48,69,0,69),
+          array(0,69,0,0),
+          array(0,0,48,0),
+          array(13,11,13,29),
+          array(13,29,35,29),
+          array(35,29,35,11),
+          array(35,11,13,11),
+          array(13,40,13,57),
+          array(13,57,35,57),
+          array(35,57,35,40),
+          array(35,40,13,40),
+        );
 
       break;
 
       case 'C':
 
-        $this->game
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(2*$size), $posy+(0*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(0*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(4*$size), $posx+(2*$size), $posy+(4*$size), $color);
+        $coord = array(
+          array(13,57,48,57),
+          array(48,57,48,69),
+          array(48,69,0,69),
+          array(0,69,0,0),
+          array(0,0,48,0),
+          array(48,0,48,11),
+          array(48,11,13,11),
+          array(13,11,13,57),
+        );
 
       break;
 
       case 'D':
 
-        $this->game
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(0*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(2*$size), $posy+(0*$size), $color)
-        ->addLine($posx+(2*$size), $posy+(0*$size), $posx+(3*$size), $posy+(1*$size), $color)
-        ->addLine($posx+(3*$size), $posy+(1*$size), $posx+(3*$size), $posy+(3*$size), $color)
-        ->addLine($posx+(3*$size), $posy+(3*$size), $posx+(2*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(2*$size), $posy+(4*$size), $posx+(0*$size), $posy+(4*$size), $color);
+        $coord = array(
+          array(0,69,0,0),
+          array(0,0,42,0),
+          array(42,0,48,6),
+          array(48,6,48,63),
+          array(48,63,43,69),
+          array(43,69,0,69),
+          array(35,11,13,11),
+          array(13,11,13,57),
+          array(13,57,35,57),
+          array(35,57,35,11),
+        );
 
       break;
 
       case 'E':
 
-        $this->game
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(3*$size), $posy+(0*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(0*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(4*$size), $posx+(3*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(2*$size), $posx+(2*$size), $posy+(2*$size), $color);
+        $coord = array(
+          array(13,11,13,29),
+          array(13,29,48,29),
+          array(48,29,48,40),
+          array(48,40,13,40),
+          array(13,40,13,57),
+          array(13,57,48,57),
+          array(48,57,48,69),
+          array(48,69,0,69),
+          array(0,69,0,0),
+          array(0,0,48,0),
+          array(48,0,48,11),
+          array(48,11,13,11),
+        );
 
       break;
 
       case 'F':
 
-        $this->game
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(3*$size), $posy+(0*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(0*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(2*$size), $posx+(2*$size), $posy+(2*$size), $color);
+        $coord = array(
+          array(13,69,0,69),
+          array(0,69,0,0),
+          array(0,0,48,0),
+          array(48,0,48,11),
+          array(48,11,13,11),
+          array(13,11,13,29),
+          array(13,29,48,29),
+          array(48,29,48,40),
+          array(48,40,13,40),
+          array(13,40,13,69),
+        );
 
       break;
 
       case 'G':
 
-        $this->game
-        ->addLine($posx+(3*$size), $posy+(0*$size), $posx+(0*$size), $posy+(0*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(0*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(4*$size), $posx+(2*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(2*$size), $posy+(4*$size), $posx+(3*$size), $posy+(3*$size), $color)
-        ->addLine($posx+(3*$size), $posy+(3*$size), $posx+(3*$size), $posy+(2*$size), $color)
-        ->addLine($posx+(3*$size), $posy+(2*$size), $posx+(2*$size), $posy+(2*$size), $color);
+        $coord = array(
+          array(21,29,48,29),
+          array(48,29,48,69),
+          array(48,69,0,69),
+          array(0,69,0,0),
+          array(0,0,48,0),
+          array(48,0,48,11),
+          array(48,11,13,11),
+          array(13,11,13,57),
+          array(13,57,35,57),
+          array(35,57,35,40),
+          array(35,40,21,40),
+          array(21,40,21,29),
+        );
 
       break;
 
       case 'H':
 
-        $this->game
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(0*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(2*$size), $posx+(3*$size), $posy+(2*$size), $color)
-        ->addLine($posx+(3*$size), $posy+(0*$size), $posx+(3*$size), $posy+(4*$size), $color);
+        $coord = array(
+          array(13,69,0,69),
+          array(0,69,0,0),
+          array(0,0,13,0),
+          array(13,0,13,29),
+          array(13,29,35,29),
+          array(35,29,35,0),
+          array(35,0,48,0),
+          array(48,0,48,69),
+          array(48,69,35,69),
+          array(35,69,35,40),
+          array(35,40,13,40),
+          array(13,40,13,69),
+        );
 
       break;
 
       case 'I':
 
-        $this->game
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(2*$size), $posy+(0*$size), $color)
-        ->addLine($posx+(1*$size), $posy+(0*$size), $posx+(1*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(4*$size), $posx+(2*$size), $posy+(4*$size), $color);
+        $coord = array(
+          array(13,69,0,69),
+          array(0,69,0,0),
+          array(0,0,13,0),
+          array(13,0,13,69),
+        );
 
       break;
 
       case 'J':
 
-        $this->game
-        ->addLine($posx+(1*$size), $posy+(0*$size), $posx+(3*$size), $posy+(0*$size), $color)
-        ->addLine($posx+(2*$size), $posy+(0*$size), $posx+(2*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(2*$size), $posy+(4*$size), $posx+(0*$size), $posy+(4*$size), $color);
+        $coord = array(
+          array(13,39,13,57),
+          array(13,57,35,57),
+          array(35,57,35,0),
+          array(35,0,48,0),
+          array(48,0,48,69),
+          array(48,69,0,69),
+          array(0,69,0,39),
+          array(0,39,13,39),
+        );
 
       break;
 
       case 'K':
 
-        $this->game
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(0*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(2*$size), $posx+(2*$size), $posy+(0*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(2*$size), $posx+(2*$size), $posy+(4*$size), $color);
+        $coord = array(
+          array(13,69,0,69),
+          array(0,69,0,0),
+          array(0,0,13,0),
+          array(13,0,13,29),
+          array(13,29,35,0),
+          array(35,0,48,0),
+          array(48,0,24,34),
+          array(24,34,48,69),
+          array(48,69,35,69),
+          array(35,69,13,40),
+          array(13,40,13,69),
+        );
 
       break;
 
       case 'L':
 
-        $this->game
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(0*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(4*$size), $posx+(2*$size), $posy+(4*$size), $color);
+        $coord = array(
+          array(13,57,48,57),
+          array(48,57,48,69),
+          array(48,69,0,69),
+          array(0,69,0,0),
+          array(0,0,13,0),
+          array(13,0,13,57),
+        );
 
       break;
 
       case 'M':
 
-        $this->game
-        ->addLine($posx+(0*$size), $posy+(4*$size), $posx+(0*$size), $posy+(0*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(2*$size), $posy+(2*$size), $color)
-        ->addLine($posx+(2*$size), $posy+(2*$size), $posx+(4*$size), $posy+(0*$size), $color)
-        ->addLine($posx+(4*$size), $posy+(0*$size), $posx+(4*$size), $posy+(4*$size), $color);
+        $coord = array(
+          array(13,69,0,69),
+          array(0,69,0,0),
+          array(0,0,13,0),
+          array(13,0,27,38),
+          array(27,38,41,0),
+          array(41,0,53,0),
+          array(53,0,53,69),
+          array(53,69,41,69),
+          array(41,69,41,40),
+          array(41,40,31,69),
+          array(31,69,23,69),
+          array(23,69,13,40),
+          array(13,40,13,69),
+        );
 
       break;
 
       case 'N':
 
-        $this->game
-        ->addLine($posx+(0*$size), $posy+(4*$size), $posx+(0*$size), $posy+(0*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(2*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(2*$size), $posy+(4*$size), $posx+(2*$size), $posy+(0*$size), $color);
+        $coord = array(
+          array(13,69,0,69),
+          array(0,69,0,0),
+          array(0,0,13,0),
+          array(13,0,35,39),
+          array(35,39,35,0),
+          array(35,0,48,0),
+          array(48,0,48,69),
+          array(48,69,35,69),
+          array(35,69,13,29),
+          array(13,29,13,69),
+        );
 
       break;
 
       case 'O':
 
-        $this->game
-        ->addLine($posx+(1*$size), $posy+(0*$size), $posx+(0*$size), $posy+(1*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(1*$size), $posx+(0*$size), $posy+(3*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(3*$size), $posx+(1*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(1*$size), $posy+(4*$size), $posx+(2*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(2*$size), $posy+(4*$size), $posx+(3*$size), $posy+(3*$size), $color)
-        ->addLine($posx+(3*$size), $posy+(3*$size), $posx+(3*$size), $posy+(1*$size), $color)
-        ->addLine($posx+(3*$size), $posy+(1*$size), $posx+(2*$size), $posy+(0*$size), $color)
-        ->addLine($posx+(2*$size), $posy+(0*$size), $posx+(1*$size), $posy+(0*$size), $color);
+        $coord = array(
+          array(48,0,48,69),
+          array(48,69,0,69),
+          array(0,69,0,0),
+          array(0,0,48,0),
+          array(35,11,13,11),
+          array(13,11,13,57),
+          array(13,57,35,57),
+          array(35,57,35,11),
+        );
 
       break;
 
       case 'P':
 
-        $this->game
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(2*$size), $posy+(0*$size), $color)
-        ->addLine($posx+(2*$size), $posy+(0*$size), $posx+(2*$size), $posy+(2*$size), $color)
-        ->addLine($posx+(2*$size), $posy+(2*$size), $posx+(0*$size), $posy+(2*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(0*$size), $posy+(4*$size), $color);
+        $coord = array(
+          array(13,69,0,69),
+          array(0,69,0,0),
+          array(0,0,48,0),
+          array(48,0,48,40),
+          array(48,40,13,40),
+          array(13,40,13,69),
+          array(13,11,13,29),
+          array(13,29,35,29),
+          array(35,29,35,11),
+          array(35,11,13,11),
+        );
 
       break;
 
       case 'Q':
 
-        $this->game
-        ->addLine($posx+(1*$size), $posy+(0*$size), $posx+(0*$size), $posy+(1*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(1*$size), $posx+(0*$size), $posy+(3*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(3*$size), $posx+(1*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(1*$size), $posy+(4*$size), $posx+(2*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(2*$size), $posy+(4*$size), $posx+(3*$size), $posy+(3*$size), $color)
-        ->addLine($posx+(3*$size), $posy+(3*$size), $posx+(3*$size), $posy+(1*$size), $color)
-        ->addLine($posx+(3*$size), $posy+(1*$size), $posx+(2*$size), $posy+(0*$size), $color)
-        ->addLine($posx+(2*$size), $posy+(0*$size), $posx+(1*$size), $posy+(0*$size), $color)
-        ->addLine($posx+(2*$size), $posy+(3*$size), $posx+(3*$size), $posy+(4*$size), $color);
+        $coord = array(
+          array(30,69,0,69),
+          array(0,69,0,0),
+          array(0,0,48,0),
+          array(48,0,48,69),
+          array(48,69,41,69),
+          array(41,69,47,81),
+          array(47,81,36,81),
+          array(36,81,30,69),
+          array(35,57,35,11),
+          array(35,11,13,11),
+          array(13,11,13,57),
+          array(13,57,24,57),
+          array(24,57,19,49),
+          array(19,49,31,49),
+          array(31,49,35,57),
+        );
 
       break;
 
       case 'R':
 
-        $this->game
-        ->addLine($posx+(0*$size), $posy+(4*$size), $posx+(0*$size), $posy+(0*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(2*$size), $posy+(0*$size), $color)
-        ->addLine($posx+(2*$size), $posy+(0*$size), $posx+(2*$size), $posy+(2*$size), $color)
-        ->addLine($posx+(2*$size), $posy+(2*$size), $posx+(0*$size), $posy+(2*$size), $color)
-        ->addLine($posx+(1*$size), $posy+(2*$size), $posx+(2*$size), $posy+(4*$size), $color);
+        $coord = array(
+          array(0,69,0,0),
+          array(0,0,48,0),
+          array(48,0,48,40),
+          array(48,40,31,40),
+          array(31,40,48,69),
+          array(48,69,35,69),
+          array(35,69,18,40),
+          array(18,40,13,40),
+          array(13,40,13,69),
+          array(13,69,0,69),
+          array(13,11,13,29),
+          array(13,29,35,29),
+          array(35,29,35,11),
+          array(35,11,13,11),
+        );
 
       break;
 
       case 'S':
 
-        $this->game
-        ->addLine($posx+(2*$size), $posy+(0*$size), $posx+(0*$size), $posy+(0*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(0*$size), $posy+(2*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(2*$size), $posx+(2*$size), $posy+(2*$size), $color)
-        ->addLine($posx+(2*$size), $posy+(2*$size), $posx+(2*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(2*$size), $posy+(4*$size), $posx+(0*$size), $posy+(4*$size), $color);
+        $coord = array(
+          array(0,40,0,0),
+          array(0,0,48,0),
+          array(48,0,48,11),
+          array(48,11,13,11),
+          array(13,11,13,29),
+          array(13,29,48,29),
+          array(48,29,48,69),
+          array(48,69,0,69),
+          array(0,69,0,57),
+          array(0,57,35,57),
+          array(35,57,35,40),
+          array(35,40,0,40),
+        );
 
       break;
 
       case 'T':
 
-        $this->game
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(2*$size), $posy+(0*$size), $color)
-        ->addLine($posx+(1*$size), $posy+(0*$size), $posx+(1*$size), $posy+(4*$size), $color);
+        $coord = array(
+          array(18,11,0,11),
+          array(0,11,0,0),
+          array(0,0,48,0),
+          array(48,0,48,11),
+          array(48,11,31,11),
+          array(31,11,31,69),
+          array(31,69,18,69),
+          array(18,69,18,11),
+        );
 
       break;
 
       case 'U':
 
-        $this->game
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(0*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(4*$size), $posx+(3*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(3*$size), $posy+(4*$size), $posx+(3*$size), $posy+(0*$size), $color);
+        $coord = array(
+          array(35,0,48,0),
+          array(48,0,48,69),
+          array(48,69,0,69),
+          array(0,69,0,0),
+          array(0,0,13,0),
+          array(13,0,13,57),
+          array(13,57,35,57),
+          array(35,57,35,0),
+        );
 
       break;
 
       case 'V':
 
-        $this->game
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(1*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(1*$size), $posy+(4*$size), $posx+(2*$size), $posy+(0*$size), $color);
+        $coord = array(
+          array(35,0,48,0),
+          array(48,0,32,69),
+          array(32,69,16,69),
+          array(16,69,0,0),
+          array(0,0,13,0),
+          array(13,0,23,53),
+          array(23,53,35,0),
+        );
 
       break;
 
       case 'W':
 
-        $this->game
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(1*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(1*$size), $posy+(4*$size), $posx+(2*$size), $posy+(1*$size), $color)
-        ->addLine($posx+(2*$size), $posy+(1*$size), $posx+(3*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(3*$size), $posy+(4*$size), $posx+(4*$size), $posy+(0*$size), $color);
+        $coord = array(
+          array(34,37,28,69),
+          array(28,69,12,69),
+          array(12,69,0,0),
+          array(0,0,13,0),
+          array(13,0,20,46),
+          array(20,46,27,0),
+          array(27,0,40,0),
+          array(40,0,47,46),
+          array(47,46,54,0),
+          array(54,0,68,0),
+          array(68,0,55,69),
+          array(55,69,39,69),
+          array(39,69,34,37),
+        );
 
       break;
 
       case 'X':
 
-        $this->game
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(4*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(4*$size), $posx+(4*$size), $posy+(0*$size), $color);
+        $coord = array(
+          array(17,34,17,34),
+          array(17,34,0,0),
+          array(0,0,13,0),
+          array(13,0,24,22),
+          array(24,22,35,0),
+          array(35,0,48,0),
+          array(48,0,30,34),
+          array(30,34,31,34),
+          array(31,34,48,69),
+          array(48,69,34,69),
+          array(34,69,23,47),
+          array(23,47,12,69),
+          array(12,69,0,69),
+          array(0,69,17,34),
+        );
 
       break;
 
       case 'Y':
 
-        $this->game
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(1*$size), $posy+(2*$size), $color)
-        ->addLine($posx+(1*$size), $posy+(2*$size), $posx+(2*$size), $posy+(0*$size), $color)
-        ->addLine($posx+(1*$size), $posy+(2*$size), $posx+(1*$size), $posy+(4*$size), $color);
+        $coord = array(
+          array(30,34,30,69),
+          array(30,69,16,69),
+          array(16,69,16,34),
+          array(16,34,0,0),
+          array(0,0,13,0),
+          array(13,0,24,22),
+          array(24,22,35,0),
+          array(35,0,48,0),
+          array(48,0,30,34),
+        );
 
       break;
 
       case 'Z':
 
-        $this->game
-        ->addLine($posx+(0*$size), $posy+(0*$size), $posx+(2*$size), $posy+(0*$size), $color)
-        ->addLine($posx+(2*$size), $posy+(0*$size), $posx+(0*$size), $posy+(4*$size), $color)
-        ->addLine($posx+(0*$size), $posy+(4*$size), $posx+(2*$size), $posy+(4*$size), $color);
+        $coord = array(
+          array(31,11,0,11),
+          array(0,11,0,0),
+          array(0,0,48,0),
+          array(48,0,48,11),
+          array(48,11,16,57),
+          array(16,57,48,57),
+          array(48,57,48,69),
+          array(48,69,0,69),
+          array(0,69,0,57),
+          array(0,57,31,11),
+        );
 
       break;
 
     }
 
+    if ( $coord ) {
+
+      $this->drawShape($posx,$posy,$size,array(
+
+        array(
+          "id" => "chart",
+          "type" => "line",
+          "origin" => "left",
+          "color" => $color,
+          "coord" => $coord,
+        )
+
+      ));
+
+    }
+
   }
 
+  public function setGraphics(){
 
+    /*
+    | LOGO
+    */
+    $this->graphic_LOGO = array(
+
+      array(
+        "id" => "S",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::BLUE,
+        "coord" => array(
+          array(0,89,0,69),
+          array(0,69,66,69),
+          array(66,69,66,66),
+          array(66,66,0,66),
+          array(0,66,0,23),
+          array(0,23,85,23),
+          array(85,23,85,42),
+          array(85,42,19,42),
+          array(19,42,19,46),
+          array(19,46,85,46),
+          array(85,46,85,89),
+          array(85,89,0,89),
+        )
+      ),
+
+      array(
+        "id" => "I",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::BLUE,
+        "coord" => array(
+          array(94,89,94,23),
+          array(94,23,113,23),
+          array(113,23,113,89),
+          array(113,89,94,89),
+        )
+      ),
+
+      array(
+        "id" => "M",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::BLUE,
+        "coord" => array(
+          array(122,89,122,19),
+          array(122,19,165,62),
+          array(165,62,208,19),
+          array(208,19,208,89),
+          array(208,89,188,89),
+          array(188,89,188,66),
+          array(188,66,165,89),
+          array(165,89,142,66),
+          array(142,66,142,89),
+          array(142,89,122,89),
+        )
+      ),
+
+      array(
+        "id" => "0",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::BLUE,
+        "coord" => array(
+          array(217,89,217,23),
+          array(217,23,302,23),
+          array(302,23,302,89),
+          array(302,89,217,89),
+          array(283,69,283,42),
+          array(283,42,236,42),
+          array(236,42,236,69),
+          array(236,69,283,69),
+        )
+      ),
+
+      array(
+        "id" => "N",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::BLUE,
+        "coord" => array(
+          array(330,46,330,89),
+          array(330,89,311,89),
+          array(311,89,311,0),
+          array(311,0,377,66),
+          array(377,66,377,23),
+          array(377,23,396,23),
+          array(396,23,396,112),
+          array(396,112,330,46),
+        )
+      ),
+
+      array(
+        "id" => "decoration",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::LIME,
+        "coord" => array(
+          array(182,117,0,117),
+        )
+      ),
+
+      array(
+        "id" => "L",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::LIME,
+        "coord" => array(
+          array(197,128,197,105),
+          array(197,105,203,105),
+          array(203,105,203,121),
+          array(203,121,227,121),
+          array(227,121,227,128),
+          array(227,128,197,128),
+        )
+      ),
+
+      array(
+        "id" => "A",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::LIME,
+        "coord" => array(
+          array(231,128,262,98),
+          array(262,98,262,128),
+          array(262,128,255,128),
+          array(255,128,255,114),
+          array(255,114,241,128),
+          array(241,128,231,128),
+        )
+      ),
+
+      array(
+        "id" => "Z",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::LIME,
+        "coord" => array(
+          array(265,128,281,112),
+          array(281,112,266,112),
+          array(266,112,266,105),
+          array(266,105,298,105),
+          array(298,105,281,121),
+          array(281,121,296,121),
+          array(296,121,296,128),
+          array(296,128,265,128),
+        )
+      ),
+
+      array(
+        "id" => "E",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::LIME,
+        "coord" => array(
+          array(301,128,301,105),
+          array(301,105,331,105),
+          array(331,105,331,112),
+          array(331,112,308,112),
+          array(308,112,308,113),
+          array(308,113,331,113),
+          array(331,113,324,120),
+          array(324,120,308,120),
+          array(308,120,308,121),
+          array(308,121,331,121),
+          array(331,121,331,128),
+          array(331,128,301,128),
+        )
+      ),
+
+      array(
+        "id" => "R",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::LIME,
+        "coord" => array(
+          array(344,113,359,113),
+          array(359,113,359,112),
+          array(359,112,343,112),
+          array(343,112,343,128),
+          array(343,128,336,128),
+          array(336,128,336,105),
+          array(336,105,366,105),
+          array(366,105,366,120),
+          array(366,120,361,120),
+          array(361,120,367,127),
+          array(367,127,367,137),
+          array(367,137,344,113),
+        )
+      )
+
+    );
+
+    /*
+    | BUTTON
+    */
+    $this->graphic_BT_X = array(
+
+      array(
+        "id" => "btcircle",
+        "type" => "circle",
+        "origin" => "center",
+        "color" => LaserColor::BLUE,
+        "coord" => array(
+          array(0,0,80,80),
+        )
+      ),
+      array(
+        "id" => "X",
+        "type" => "line",
+        "origin" => "center",
+        "color" => LaserColor::BLUE,
+        "coord" => array(
+          array(0,0,30,30),
+          array(0,30,30,0),
+        )
+      ),
+
+    );
+
+    /*
+    | PRESS SIMON
+    */
+    $this->graphic_SIMON_PRESS = array(
+
+      array(
+        "id" => "",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::BLUE,
+        "coord" => array(
+          array(232,116,116,232),
+          array(116,232,0,116),
+          array(0,116,116,0),
+          array(116,0,232,116),
+        )
+      ),
+      array(
+        "id" => "",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::BLUE,
+        "coord" => array(
+          array(214,116,116,214),
+          array(116,214,17,116),
+          array(17,116,116,17),
+          array(116,17,214,116),
+        )
+      ),
+      array(
+        "id" => "",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::BLUE,
+        "coord" => array(
+          array(195,116,116,195),
+          array(116,195,36,116),
+          array(36,116,116,36),
+          array(116,36,195,116),
+        )
+      ),
+
+
+    );
+
+
+
+
+
+
+
+
+  }
 
 }
 
-$HANDYGAME = new HANDYGAME();
+$SIMONLAZER = new SIMONLAZER();
 
 ?>
