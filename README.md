@@ -3,7 +3,7 @@ edge-laser-simulator
 
 A NodeJS laser simulator for AlsaceDigitale/edgefest-hacking
 
-![alt text](http://i.imgur.com/DaBKSIi.png "Demo")
+![alt text](http://i.imgur.com/2CVHDOs.png "Demo")
 
 ##Remarques
 Ceci est un serveur de test pour commencer à coder votre jeu pour l'"Edge Laser".
