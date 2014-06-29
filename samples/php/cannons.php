@@ -13,24 +13,6 @@
 
 	$font_lcd = new LaserFont('fonts/lcd.elfc');
 
-	$matrix = array(
-		array(0,0,0,0,0,0,0,0,0,0),
-		array(0,0,0,0,0,0,0,0,0,0),
-		array(0,0,0,0,0,0,0,0,0,0),
-		array(0,0,0,0,0,0,0,0,0,0),
-		array(0,0,0,0,0,0,0,0,0,0),
-		array(0,0,0,0,0,0,0,0,0,0),
-		array(0,0,0,0,0,0,0,0,0,0),
-		array(0,0,0,0,0,0,0,0,0,0),
-		array(0,0,0,0,0,0,0,0,0,0),
-		array(0,0,0,0,1,1,1,1,0,0),
-		array(0,0,0,1,1,1,0,0,0,0),
-		array(0,0,1,1,1,1,1,0,0,0),
-		array(0,0,1,1,1,1,1,1,0,0),
-		array(0,1,1,1,1,1,1,1,1,0),
-		array(1,1,1,1,1,1,1,1,1,1),
-	);
-
 	while(true)
 	{
 		$commands = $game->receiveServerCommands();
@@ -206,16 +188,34 @@
 
 		public function loadRandom()
 		{
-			global $matrix;
 			global $scene;
-			
-			foreach ($matrix as $n_line => $line)
+
+			if($dh = opendir('.'))
 			{
-				foreach ($line as $n_block => $block)
+				while(($file = readdir($dh)) !== false)
 				{
-					$bl = $this->matrix[$n_line][$n_block] = ($block) ? new Block($n_block, $n_line) : null;
-					if($bl) $scene->add($bl);
+					if(substr($file, strlen($file)-4) == '.map')
+						$maps[] = $file;
 				}
+
+				closedir($dh);
+			}
+
+			$map = explode("\n", file_get_contents($maps[rand(0, count($maps)-1)]));
+
+			$y = 0;
+			foreach ($map as &$line)
+			{
+				$x = 0;
+				foreach(str_split($line) as $bool)
+				{
+					$bl = $this->matrix[$y][$x] = ($bool == '#') ? new Block($x, $y) : null;
+					if($bl) $scene->add($bl);
+
+					$x++;
+				}
+
+				$y++;
 			}
 		}
 
