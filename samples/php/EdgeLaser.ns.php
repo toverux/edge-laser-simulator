@@ -296,7 +296,7 @@
 							case 'A' : $this->gameid = $inst->gameid; break;
 							case 'G' : $this->stopped = false; break;
 							case 'S' : $this->stopped = true; break;
-							default: $commands[]=$inst;
+							default: $commands[] = $inst;
 						}
 
 						break;
@@ -373,10 +373,12 @@
 				return $this;
 			}
 
-			public function pause()
+			public function stop()
 			{
 				$cmd = pack('C', $this->gameid) . 'S';
 				$this->sendCMD($cmd);
+
+				$this->stopped = true;
 
 				return $this;
 			}
