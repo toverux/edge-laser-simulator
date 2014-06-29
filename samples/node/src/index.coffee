@@ -1,3 +1,7 @@
+# Author : Xavier Carpentier 
+# Twitter : @xcapetir
+# Mail : contact@xavier-carpentier.com
+
 HOST = '127.0.0.1'
 PORT = 4242
 
