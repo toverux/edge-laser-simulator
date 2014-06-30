@@ -20,7 +20,7 @@ Message = (function() {
 
   Message.prototype.hello = function() {
     console.log('[SAY] hello');
-    return this.send(new Buffer('0H' + this.game.name + '\0'));
+    return this.send(new Buffer('\0H' + this.game.name + '\0'));
   };
 
   Message.prototype.addCircle = function(x, y, diameter, color) {
