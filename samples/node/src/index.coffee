@@ -12,7 +12,7 @@ class Message
 
 	hello: () -> 
 		console.log '[SAY] hello'
-		@send(new Buffer '0H' + @game.name + '\0')
+		@send(new Buffer '\0H' + @game.name + '\0')
 
 	addCircle: (x, y, diameter, color) ->		
 		message = new Buffer 24
