@@ -164,18 +164,22 @@
 	class Wind
 	{
 		public $force;
+		public $force_goal;
 
 		public function render()
 		{
 			global $game;
 
+			if($this->force_goal != $this->force)
+				$this->force += ($this->force_goal - $this->force) / 10;
+
 			$game->addLine(250, 5, 250, 15, LaserColor::CYAN);
-			$game->addLine(250, 10, 250 - $this->force * 600, 10, LaserColor::CYAN);
+			$game->addLine(250, 10, 250 - $this->force * 1600, 10, LaserColor::CYAN);
 		}
 
 		public function reevaluate()
 		{
-			$this->force = rand(-5, 5) / 30;
+			$this->force_goal = rand(-4, 4) / 80;
 		}
 
 		public function move(){}
