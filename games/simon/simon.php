@@ -1,11 +1,5 @@
 <?php
 
-include('../../samples/php/EdgeLaser.ns.php');
-
-use EdgeLaser\LaserGame;
-use EdgeLaser\LaserColor;
-use EdgeLaser\XboxKey;
-
 /*
 *
 * ---------
@@ -17,8 +11,14 @@ use EdgeLaser\XboxKey;
 * @version : 0.1
 *
 */
-class SIMONLAZER {
 
+include('../../samples/php/EdgeLaser.ns.php');
+
+use EdgeLaser\LaserGame;
+use EdgeLaser\LaserColor;
+use EdgeLaser\XboxKey;
+
+class SIMONLAZER {
 
   /*
   *
@@ -29,10 +29,13 @@ class SIMONLAZER {
   */
   public function __construct() {
 
+    echo 'SIMON: __construct' . PHP_EOL;
+
     //set lazer
 		$this->game = new LaserGame('simon');
 		$this->game->setResolution(500);
 		$this->game->setDefaultColor(LaserColor::LIME);
+    $this->game->setFramerate(25);
 
     //set graphic
     $this->setGraphics();
@@ -40,23 +43,26 @@ class SIMONLAZER {
     //set first screen
     $this->screen = 'start';
 
-    //init start screen
+    //init screen
     $this->startInit();
+    $this->levelInit();
 
-    //run game
-		$this->run();
+    //init game
+		$this->init();
 
 	}
 
 
   /*
   *
-  * ----
-  * RUN => init game var
-  * ----
+  * --------
+  * RUN GAME
+  * --------
   *
   */
-	public function run() {
+	public function init() {
+
+    echo 'SIMON: init' . PHP_EOL;
 
   		/*
       | Level screen
@@ -90,7 +96,7 @@ class SIMONLAZER {
   		//PLAYER
   		$this->player['name'] = "simon";
   		$this->player['levels'][$this->currentLevel] = 'uncomplete';
-      $this->levelInit();
+
 
       /*
       | Use
@@ -109,10 +115,52 @@ class SIMONLAZER {
 
       if ( ! $this->game->isStopped() ) {
 
-        $this->display();
+        $this->game->newFrame();
+
+        switch ($this->screen) {
+
+          case 'start':
+
+            $this->levelInit();
+            $this->menuControl();
+            $this->startScreen();
+
+          break;
+
+          case 'level':
+
+            $this->startInit();
+
+            //$this->menuControl();
+            $this->levelScreen();
+
+          break;
+
+          case 'error':
+
+            $this->errorControl();
+            $this->errorrScreen();
+
+          break;
+
+          case 'success':
+
+            $this->successControl();
+            $this->succesScreen();
+
+          break;
+
+        }
+
+        $this->game->endFrame();
 
         $this->game->refresh();
+
         usleep(50000);
+
+      } else {
+
+        $this->screen = 'start';
 
       }
 
@@ -121,59 +169,6 @@ class SIMONLAZER {
 
 	}
 
-
-  /*
-  *
-  * -------
-  * DISPLAY => init and run screen
-  * -------
-  *
-  * $id : string : start,level,error,success
-  *
-  */
-  public function display(){
-
-    /*
-    | Execute current screen
-    */
-    switch ($this->screen) {
-
-      case 'start':
-
-        //$this->levelInit();
-
-        $this->menuControl();
-        $this->startScreen();
-
-      break;
-
-      case 'level':
-
-        $this->startInit();
-
-        //$this->menuControl();
-        $this->levelScreen();
-
-      break;
-
-      case 'error':
-
-        $this->errorControl();
-        $this->errorrScreen();
-
-      break;
-
-      case 'success':
-
-        $this->successControl();
-        $this->succesScreen();
-
-      break;
-
-    }
-
-
-  }
 
   /*
   *
@@ -514,6 +509,7 @@ class SIMONLAZER {
 
 			case XboxKey::P1_Y :
 
+        echo 'pressY' . PHP_EOL;
 				$this->PRESS('Y');
 				$this->checkPRESS('Y');
 
@@ -521,6 +517,7 @@ class SIMONLAZER {
 
 			case XboxKey::P1_B :
 
+        echo 'pressB' . PHP_EOL;
 				$this->PRESS('B');
 				$this->checkPRESS('B');
 
@@ -528,6 +525,7 @@ class SIMONLAZER {
 
 			case XboxKey::P1_X :
 
+        echo 'pressX' . PHP_EOL;
 				$this->PRESS('X');
 				$this->checkPRESS('X');
 
@@ -535,6 +533,7 @@ class SIMONLAZER {
 
 			case XboxKey::P1_A :
 
+        echo 'pressA' . PHP_EOL;
 				$this->PRESS('A');
 				$this->checkPRESS('A');
 
@@ -596,24 +595,36 @@ class SIMONLAZER {
 
 			case 'X':
 
+        $this->graphic_SIMON_PRESS[0]['color'] = LaserColor::BLUE;
+        $this->graphic_SIMON_PRESS[1]['color'] = LaserColor::BLUE;
+        $this->graphic_SIMON_PRESS[2]['color'] = LaserColor::BLUE;
         $this->drawShape(125,250,1,$this->graphic_SIMON_PRESS);
 
 			break;
 
 			case 'B':
 
+        $this->graphic_SIMON_PRESS[0]['color'] = LaserColor::RED;
+        $this->graphic_SIMON_PRESS[1]['color'] = LaserColor::RED;
+        $this->graphic_SIMON_PRESS[2]['color'] = LaserColor::RED;
 			  $this->drawShape(375,250,1,$this->graphic_SIMON_PRESS);
 
       break;
 
 			case 'Y':
 
+        $this->graphic_SIMON_PRESS[0]['color'] = LaserColor::YELLOW;
+        $this->graphic_SIMON_PRESS[1]['color'] = LaserColor::YELLOW;
+        $this->graphic_SIMON_PRESS[2]['color'] = LaserColor::YELLOW;
         $this->drawShape(250,175,1,$this->graphic_SIMON_PRESS);
 
 			break;
 
 			case 'A':
 
+        $this->graphic_SIMON_PRESS[0]['color'] = LaserColor::GREEN;
+        $this->graphic_SIMON_PRESS[1]['color'] = LaserColor::GREEN;
+        $this->graphic_SIMON_PRESS[2]['color'] = LaserColor::GREEN;
         $this->drawShape(250,375,1,$this->graphic_SIMON_PRESS);
 
 			break;
@@ -1494,7 +1505,7 @@ class SIMONLAZER {
       array(
         "id" => "",
         "type" => "line",
-        "origin" => "left",
+        "origin" => "center",
         "color" => LaserColor::BLUE,
         "coord" => array(
           array(232,116,116,232),
@@ -1506,7 +1517,7 @@ class SIMONLAZER {
       array(
         "id" => "",
         "type" => "line",
-        "origin" => "left",
+        "origin" => "center",
         "color" => LaserColor::BLUE,
         "coord" => array(
           array(214,116,116,214),
@@ -1518,7 +1529,7 @@ class SIMONLAZER {
       array(
         "id" => "",
         "type" => "line",
-        "origin" => "left",
+        "origin" => "center",
         "color" => LaserColor::BLUE,
         "coord" => array(
           array(195,116,116,195),
@@ -1530,13 +1541,22 @@ class SIMONLAZER {
 
 
     );
-
-
-
-
-
-
-
+    /*
+    $this->graphic_layer_base = array(
+      array(
+        "id" => "red",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::RED,
+        "coord" => array(
+          array(195,116,116,195),
+          array(116,195,36,116),
+          array(36,116,116,36),
+          array(116,36,195,116),
+        )
+      ),
+    );
+*/
 
   }
 
