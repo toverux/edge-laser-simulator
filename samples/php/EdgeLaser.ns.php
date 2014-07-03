@@ -178,7 +178,7 @@
 
 		class LaserGame
 		{
-			const HOST = '127.0.0.1';
+			const HOST = '192.168.1.28';
 			const PORT = 4242;
 
 			//Game management
@@ -379,6 +379,14 @@
 				$this->sendCMD($cmd);
 
 				$this->stopped = true;
+
+				return $this;
+			}
+
+			public function requireKinect()
+			{
+				$cmd = pack('C', $this->gameid) . 'K';
+				$this->sendCMD($cmd);
 
 				return $this;
 			}

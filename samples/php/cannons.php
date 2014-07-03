@@ -58,7 +58,7 @@
 			$wind = new Wind;
 			$wind->reevaluate();
 
-			$scene->add($cannon1)->add($cannon2)->add($map)->add($wind);
+			$scene->add($cannon1)->add($map)->add($wind)->add($cannon2);
 		}
 	}
 
@@ -170,11 +170,8 @@
 		{
 			global $game;
 
-			if($this->force_goal != $this->force)
-				$this->force += ($this->force_goal - $this->force) / 10;
-
-			$game->addLine(250, 5, 250, 15, LaserColor::CYAN);
-			$game->addLine(250, 10, 250 - $this->force * 1600, 10, LaserColor::CYAN);
+			$game->addLine(250, 470, 250, 490, LaserColor::CYAN);
+			$game->addLine(250, 480, 250 - $this->force * 2000, 480, LaserColor::CYAN);
 		}
 
 		public function reevaluate()
@@ -182,7 +179,11 @@
 			$this->force_goal = rand(-4, 4) / 80;
 		}
 
-		public function move(){}
+		public function move()
+		{
+			if($this->force_goal != $this->force)
+				$this->force += ($this->force_goal - $this->force) / 10;
+		}
 	}
 
 
@@ -287,7 +288,8 @@
 			if(!$this->neigh_right)
 				$game->addLine($this->virt_x+33.3333, $this->virt_y, $this->virt_x+33.3333, $this->virt_y+33.3333);
 			if(!$this->neigh_bottom)
-				$game->addLine($this->virt_x+33.3333, $this->virt_y+33.3333, $this->virt_x, $this->virt_y+33.3333);
+				if($this->real_y < 14)
+					$game->addLine($this->virt_x+33.3333, $this->virt_y+33.3333, $this->virt_x, $this->virt_y+33.3333);
 			if(!$this->neigh_left)
 				$game->addLine($this->virt_x, $this->virt_y+33.3333, $this->virt_x, $this->virt_y);
 		}
