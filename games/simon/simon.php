@@ -20,13 +20,13 @@ use EdgeLaser\XboxKey;
 
 class SIMONLAZER {
 
-  /*
+  /*** #construct
   *
   * ---------
   * CONSTRUCT
   * ---------
   *
-  */
+  ***/
   public function __construct() {
 
     echo 'SIMON: __construct' . PHP_EOL;
@@ -40,8 +40,7 @@ class SIMONLAZER {
     //set graphic
     $this->setGraphics();
 
-    //set first screen
-    $this->screen = 'start';
+    $this->defaultScreen = 'start';
 
     //init screen
     $this->startInit();
@@ -53,13 +52,13 @@ class SIMONLAZER {
 	}
 
 
-  /*
+  /*** #init
   *
   * --------
   * RUN GAME
   * --------
   *
-  */
+  ***/
 	public function init() {
 
     echo 'SIMON: init' . PHP_EOL;
@@ -72,37 +71,11 @@ class SIMONLAZER {
   			array("X","B","B","B"),
   			array("Y","B","Y","B"),
   		);
-  		$this->levels_check = array(
-  			array(),
-  			array(),
-  			array(),
-  		);
-  		$this->levels_state = array(
-  			"uncomplete",
-  			"uncomplete",
-  			"uncomplete",
-  		);
+      $this->levelGenerate = $this->levelGenerate( 4 );
 
-      $this->levelChecking = true;
-  		$this->ListenKey = true;
-  		$this->levelCheck = 0;
-  		$this->currentLevel = 0;
-  		$this->levelStep = 0;
-  		$this->userTap = array();
-  		$this->LevelSucces = false;
   		//TIMER
   		$this->timerDelay = 10;
   		$this->timer = $this->timerDelay;
-  		//PLAYER
-  		$this->player['name'] = "simon";
-  		$this->player['levels'][$this->currentLevel] = 'uncomplete';
-
-
-      /*
-      | Use
-      */
-      $this->margin = 10;
-
 
     /*
     |
@@ -160,7 +133,7 @@ class SIMONLAZER {
 
       } else {
 
-        $this->screen = 'start';
+        $this->screen = $this->defaultScreen;
 
       }
 
@@ -170,143 +143,262 @@ class SIMONLAZER {
 	}
 
 
-  /*
+  /*** #start
   *
   * ------------
   * START INIT  => init screen
   * ------------
   *
-  */
+  ***/
   public function startInit(){
 
-    $this->startScreen_int_loop = 35;
-    $this->startScreen_anim_init = true;
-    $this->timerColor = 0;
+    $this->startScreen_timer_global = 0;
+
+    $this->startScreen_timer_logoFX_loop = 30;
+    $this->startScreen_timer_logoFX = 0;
+
+    $this->startScreen_timer_btX_loop = 15;
+    $this->startScreen_timer_btX = 0;
 
   }
 
 
-  /*
+  /*** #start
   *
   * ------------
   * START SCREEN  => screen loop
   * ------------
   *
-  */
+  ***/
   public function startScreen(){
 
-    if ( $this->timerColor == $this->startScreen_int_loop ) $this->timerColor = 0;
+    /*
+     | anim Logo effect
+    */
+    if ( $this->startScreen_timer_logoFX == $this->startScreen_timer_logoFX_loop ) $this->startScreen_timer_logoFX = 0;
 
-    //LOGO
-    //reflect fx
     $this->graphic_LOGO[4][color] = LaserColor::BLUE;
     $this->graphic_LOGO[3][color] = LaserColor::BLUE;
     $this->graphic_LOGO[2][color] = LaserColor::BLUE;
     $this->graphic_LOGO[1][color] = LaserColor::BLUE;
     $this->graphic_LOGO[0][color] = LaserColor::BLUE;
-    if ( $this->timerColor == 13 ) $this->graphic_LOGO[4][color] = LaserColor::CYAN;
-    if ( $this->timerColor == 14 ) $this->graphic_LOGO[3][color] = LaserColor::CYAN;
-    if ( $this->timerColor == 15 ) $this->graphic_LOGO[2][color] = LaserColor::CYAN;
-    if ( $this->timerColor == 16 ) $this->graphic_LOGO[1][color] = LaserColor::CYAN;
-    if ( $this->timerColor == 17 ) $this->graphic_LOGO[0][color] = LaserColor::CYAN;
+    if ( $this->startScreen_timer_logoFX == 13 ) $this->graphic_LOGO[4][color] = LaserColor::CYAN;
+    if ( $this->startScreen_timer_logoFX == 14 ) $this->graphic_LOGO[3][color] = LaserColor::CYAN;
+    if ( $this->startScreen_timer_logoFX == 15 ) $this->graphic_LOGO[2][color] = LaserColor::CYAN;
+    if ( $this->startScreen_timer_logoFX == 16 ) $this->graphic_LOGO[1][color] = LaserColor::CYAN;
+    if ( $this->startScreen_timer_logoFX == 17 ) $this->graphic_LOGO[0][color] = LaserColor::CYAN;
 
-    //slide In
-    if ( $this->startScreen_anim_init == true ){
-      if ( $this->timerColor == 1 ) $this->drawShape(50,0,1,$this->graphic_LOGO);
-      if ( $this->timerColor == 2 ) $this->drawShape(50,20,1,$this->graphic_LOGO);
-      if ( $this->timerColor == 3 ) $this->drawShape(50,40,1,$this->graphic_LOGO);
-      if ( $this->timerColor == 4 ) $this->drawShape(50,80,1,$this->graphic_LOGO);
-      if ( $this->timerColor == 5 ) $this->drawShape(50,100,1,$this->graphic_LOGO);
-      if ( $this->timerColor == 5 ) $this->startScreen_anim_init = false;
-    } else {
-      $this->drawShape(50,100,1,$this->graphic_LOGO);
-    }
+    $this->startScreen_timer_logoFX++;
 
-    //BT X
-    if ( $this->startScreen_anim_init == true ){
-      if ( $this->timerColor == 1 ) $this->drawShape(250,500,1.2,$this->graphic_BT_X);
-      if ( $this->timerColor == 2 ) $this->drawShape(250,410,1.2,$this->graphic_BT_X);
-      if ( $this->timerColor == 3 ) $this->drawShape(250,390,1.2,$this->graphic_BT_X);
-      if ( $this->timerColor == 4 ) $this->drawShape(250,370,1.2,$this->graphic_BT_X);
-      if ( $this->timerColor == 5 ) $this->drawShape(250,350,1.2,$this->graphic_BT_X);
-      if ( $this->timerColor == 5 ) $this->startScreen_anim_init = false;
-    } else {
-      if ( $this->timerColor <= 5 ) $this->drawShape(250,350,1.2,$this->graphic_BT_X);
-      if ( $this->timerColor == 6 ) $this->drawShape(250,350,1.1,$this->graphic_BT_X);
-      if ( $this->timerColor == 7 ) $this->drawShape(250,350,1,$this->graphic_BT_X);
-      if ( $this->timerColor == 8 ) $this->drawShape(250,350,1.1,$this->graphic_BT_X);
-      if ( $this->timerColor == 9 ) $this->drawShape(250,350,1.2,$this->graphic_BT_X);
-      if ( $this->timerColor == 10 ) $this->drawShape(250,350,1.1,$this->graphic_BT_X);
-      if ( $this->timerColor == 11 ) $this->drawShape(250,350,1,$this->graphic_BT_X);
-      if ( $this->timerColor == 12 ) $this->drawShape(250,350,1.1,$this->graphic_BT_X);
-      if ( $this->timerColor >= 13 ) $this->drawShape(250,350,1.2,$this->graphic_BT_X);
-    }
-
-    $this->timerColor++;
-
-  }
+    /*
+     | anim Logo slide
+    */
+    $this->animShape( array(
+      "id"           =>   '',
+      "frameBase"    =>   $this->startScreen_timer_global,
+      "showOnFrame"  =>   0,
+      "animDelay"    =>   0,
+      "animDuration" =>   3,
+      "hideOnFrame"  =>   5,
+      "stateStart"   =>   array( 50,  0,  1,    0,  $this->graphic_LOGO),
+      "stateEnd"     =>   array( 50,  100,  1,  0,  $this->graphic_LOGO),
+    ));
 
 
-  /*
-  *
-  * --------------
-  * SUCCESS SCREEN  => screen loop
-  * --------------
-  *
-  */
-  public function succesScreen(){
+    /*
+     | anim bt X slide
+    */
+    $this->animShape( array(
+      "id"           =>   '',
+      "frameBase"    =>   $this->startScreen_timer_global,
+      "showOnFrame"  =>   0,
+      "animDelay"    =>   0,
+      "animDuration" =>   3,
+      "hideOnFrame"  =>   3,
+      "stateStart"   =>   array( 250,  500,  1.1,  0,  $this->graphic_BT_X),
+      "stateEnd"     =>   array( 250,  350,  1.1,  0,  $this->graphic_BT_X),
+    ));
 
-    if ( count($this->levels) == $this->currentLevel+1 ) {
+    /*
+     | anim bt X push
+    */
+    if ( $this->startScreen_timer_btX == $this->startScreen_timer_btX_loop ) $this->startScreen_timer_btX = 3;
 
-      $this->drawText('BOOOOM|you|beat|simon',100,100,LaserColor::BLUE,1);
+    $this->animShape( array(
+      "id"           =>   '',
+      "frameBase"    =>   $this->startScreen_timer_btX,
+      "showOnFrame"  =>   3,
+      "animDelay"    =>   3,
+      "animDuration" =>   3,
+      "hideOnFrame"  =>   6,
+      "stateStart"   =>   array( 250,  350,  1.1,  0,  $this->graphic_BT_X),
+      "stateEnd"     =>   array( 250,  350,  1,    0,  $this->graphic_BT_X),
+    ));
 
-    } else {
+    $this->animShape( array(
+      "id"           =>   '',
+      "frameBase"    =>   $this->startScreen_timer_btX,
+      "showOnFrame"  =>   6,
+      "animDelay"    =>   3,
+      "animDuration" =>   3,
+      "hideOnFrame"  =>   $this->startScreen_timer_btX_loop,
+      "stateStart"   =>   array( 250,  350,  1.1,  0,  $this->graphic_BT_X),
+      "stateEnd"     =>   array( 250,  350,  1,    0,  $this->graphic_BT_X),
+    ));
 
-      $this->drawText('GREAT|you|beat|simon',50,50,LaserColor::BLUE,1);
-
-      $this->drawShape(400,400,1.2,$this->graphic_BT_X);
-
-    }
-
-  }
+    $this->startScreen_timer_btX++;
 
 
-  /*
-  *
-  * ------------
-  * ERROR SCREEN  => screen loop
-  * ------------
-  *
-  */
-  public function errorrScreen(){
-
-    //$this->drawText('ERROR',100,200,LaserColor::RED,8);
+    if ( $this->startScreen_timer_global < 4 ) $this->startScreen_timer_global++;
 
   }
 
 
-  /*
+  /*** #level
   *
   * ------------
   * LEVEL INIT  => init screen
   * ------------
   *
-  */
+  ***/
   public function levelInit(){
 
+    $this->levelScreen_timer_global = 0;
 
+    $this->levels_check = array(
+      array(),
+      array(),
+      array(),
+    );
+    $this->levels_state = array(
+      "uncomplete",
+      "uncomplete",
+      "uncomplete",
+    );
+    $this->levelCheck = 0;
+    $this->currentLevel = 0;
+    $this->levelStep = 0;
+    
+    //temp
+    $this->levelScreen_key_push = 'X';
+
+    $this->levelSubScreen = 'intro';
+
+    $this->player_level_record = array();
 
   }
 
-  /*
+  /*** #level
   *
   * ------------
   * LEVEL SCREEN  => screen loop
   * ------------
   *
-  */
+  ***/
   public function levelScreen(){
 
+    switch ($this->levelSubScreen) {
+
+      case 'intro':
+        $this->menuControl();
+        $this->levelScreenIntro();
+        $this->levelScreen_timer_global++;
+        if ( $this->levelScreen_timer_global == 46 ) $this->levelSubScreen = 'play';
+      break;
+
+      case 'play':
+
+        $this->pushCPU();
+        $this->pushControl();
+
+        $this->levelScreenPlay();
+      break;
+
+      case 'outro':
+        $this->levelScreenIntro();
+        //$this->levelScreen_timer_global--;
+      break;
+
+    }
+
+  }
+
+  /*** #level
+  *
+  * -----------------------
+  * LEVEL SUBSCREEN > INTRO
+  * -----------------------
+  *
+  ***/
+  public function pushCPU(){
+
+
+
+  }
+
+  /*** #level
+  *
+  * -----------------------
+  * LEVEL SUBSCREEN > INTRO
+  * -----------------------
+  *
+  ***/
+  public function levelScreenPlay(){
+
+    /*
+     | Pusch X
+    */
+    if ( $this->pushX ) {
+
+      $this->drawShape( 240,  250,  1,  135,  $this->graphic_push_X);
+
+    } else {
+
+      $this->drawShape( 240,  250,  .7,  135,  $this->graphic_push_X_fade);
+
+    }
+
+    /*
+     | Pusch Y
+    */
+    if ( $this->pushY ) {
+
+      $this->drawShape( 250,  240,  1,  -135,  $this->graphic_push_Y);
+
+    } else {
+
+      $this->drawShape( 250,  240,  .7,  -135,  $this->graphic_push_Y_fade);
+
+    }
+
+    /*
+     | Pusch B
+    */
+    if ( $this->pushB ) {
+
+      $this->drawShape( 260,  250,  1,  -45,  $this->graphic_push_B);
+
+    } else {
+
+      $this->drawShape( 260,  250,  .7,  -45,  $this->graphic_push_B_fade);
+
+    }
+
+    /*
+     | Pusch A
+    */
+    if ( $this->pushA ) {
+
+      $this->drawShape( 250,  260,  1,  45,  $this->graphic_push_A);
+
+    } else {
+
+      //$this->graphic_push_A[0]['color'] = LaserColor::FUCHSIA;
+      $this->drawShape( 250,  260,  .7,  45,  $this->graphic_push_A_fade);
+
+    }
+
+    /*
     if ( count($this->levels[$this->currentLevel]) == count($this->levels_check[$this->currentLevel]) ) {
 
       $this->screen = 'success';
@@ -323,51 +415,161 @@ class SIMONLAZER {
 
     }
 
-    /*
-    $this->game->addRectangle(1, 1, 249, 249, LaserColor::YELLOW);
-    $this->game->addRectangle(251, 1, 499, 249, LaserColor::RED);
-    $this->game->addRectangle(1, 251, 249, 499, LaserColor::BLUE);
-    $this->game->addRectangle(251, 251, 499, 499, LaserColor::GREEN);
     */
 
-    $this->game->addLine(250,9,364,125,LaserColor::YELLOW);
-    $this->game->addLine(364,125,287,202,LaserColor::YELLOW);
-    $this->game->addLine(287,202,250,165,LaserColor::YELLOW);
-    $this->game->addLine(250,165,212,202,LaserColor::YELLOW);
-    $this->game->addLine(212,202,135,124,LaserColor::YELLOW);
-    $this->game->addLine(135,124,250,9,LaserColor::YELLOW);
+  }
 
-    $this->game->addLine(490,250,374,364,LaserColor::RED);
-    $this->game->addLine(374,364,297,287,LaserColor::RED);
-    $this->game->addLine(297,287,335,250,LaserColor::RED);
-    $this->game->addLine(335,250,297,212,LaserColor::RED);
-    $this->game->addLine(297,212,375,134,LaserColor::RED);
-    $this->game->addLine(375,134,490,250,LaserColor::RED);
+  /*** #level
+  *
+  * -----------------------
+  * LEVEL SUBSCREEN > INTRO
+  * -----------------------
+  *
+  ***/
+  public function levelScreenIntro(){
 
-    $this->game->addLine(250,489,135,374,LaserColor::GREEN);
-    $this->game->addLine(135,374,212,297,LaserColor::GREEN);
-    $this->game->addLine(212,297,250,335,LaserColor::GREEN);
-    $this->game->addLine(250,335,287,297,LaserColor::GREEN);
-    $this->game->addLine(287,297,365,375,LaserColor::GREEN);
-    $this->game->addLine(365,375,250,489,LaserColor::GREEN);
+    /*
+     | draw level background
+    */
+    $this->animShape( array(
+      "id"           =>   'X',
+      "frameBase"    =>   $this->levelScreen_timer_global,
+      "showOnFrame"  =>   0,
+      "animDelay"    =>   0,
+      "animDuration" =>   4,
+      "hideOnFrame"  =>   20,
+      "stateStart"   =>   array( 240,  250,  0,  135-30,  $this->graphic_push_X),
+      "stateEnd"     =>   array( 240,  250,  1,  135,  $this->graphic_push_X),
+    ));
 
-    $this->game->addLine(10,250,125,135,LaserColor::BLUE);
-    $this->game->addLine(125,135,202,212,LaserColor::BLUE);
-    $this->game->addLine(202,212,164,250,LaserColor::BLUE);
-    $this->game->addLine(164,250,202,287,LaserColor::BLUE);
-    $this->game->addLine(202,287,124,365,LaserColor::BLUE);
-    $this->game->addLine(124,365,10,250,LaserColor::BLUE);
+    $this->animShape( array(
+      "id"           =>   'Y',
+      "frameBase"    =>   $this->levelScreen_timer_global,
+      "showOnFrame"  =>   0,
+      "animDelay"    =>   4,
+      "animDuration" =>   4,
+      "hideOnFrame"  =>   20,
+      "stateStart"   =>   array( 250,  240,  0,  -135-30,  $this->graphic_push_Y),
+      "stateEnd"     =>   array( 250,  240,  1,  -135,  $this->graphic_push_Y),
+    ));
+
+    $this->animShape( array(
+      "id"           =>   'B',
+      "frameBase"    =>   $this->levelScreen_timer_global,
+      "showOnFrame"  =>   0,
+      "animDelay"    =>   8,
+      "animDuration" =>   4,
+      "hideOnFrame"  =>   20,
+      "stateStart"   =>   array( 260,  250,  0,  -45-30,  $this->graphic_push_B),
+      "stateEnd"     =>   array( 260,  250,  1,  -45,  $this->graphic_push_B),
+    ));
+
+    $this->animShape( array(
+      "id"           =>   '',
+      "frameBase"    =>   $this->levelScreen_timer_global,
+      "showOnFrame"  =>   0,
+      "animDelay"    =>   12,
+      "animDuration" =>   4,
+      "hideOnFrame"  =>   20,
+      "stateStart"   =>   array( 250,  260,  0,  45-30,  $this->graphic_push_A),
+      "stateEnd"     =>   array( 250,  260,  1,  45,  $this->graphic_push_A),
+    ));
+
+    /*
+     | draw level background
+    */
+    $this->animShape( array(
+      "id"           =>   'X',
+      "frameBase"    =>   $this->levelScreen_timer_global,
+      "showOnFrame"  =>   20,
+      "animDelay"    =>   20,
+      "animDuration" =>   8,
+      "hideOnFrame"  =>   9999,
+      "stateStart"   =>   array( 240,  250,  1,  135,  $this->graphic_push_X),
+      "stateEnd"     =>   array( 240,  250,  .7,  135,  $this->graphic_push_X_fade),
+    ));
+
+    $this->animShape( array(
+      "id"           =>   'Y',
+      "frameBase"    =>   $this->levelScreen_timer_global,
+      "showOnFrame"  =>   20,
+      "animDelay"    =>   22,
+      "animDuration" =>   8,
+      "hideOnFrame"  =>   9999,
+      "stateStart"   =>   array( 250,  240,  1,  -135,  $this->graphic_push_Y),
+      "stateEnd"     =>   array( 250,  240,  .7,  -135,  $this->graphic_push_Y_fade),
+    ));
+
+    $this->animShape( array(
+      "id"           =>   'B',
+      "frameBase"    =>   $this->levelScreen_timer_global,
+      "showOnFrame"  =>   20,
+      "animDelay"    =>   24,
+      "animDuration" =>   8,
+      "hideOnFrame"  =>   9999,
+      "stateStart"   =>   array( 260,  250,  1,  -45,  $this->graphic_push_B),
+      "stateEnd"     =>   array( 260,  250,  .7,  -45,  $this->graphic_push_B_fade),
+    ));
+
+    $this->animShape( array(
+      "id"           =>   'A',
+      "frameBase"    =>   $this->levelScreen_timer_global,
+      "showOnFrame"  =>   20,
+      "animDelay"    =>   26,
+      "animDuration" =>   8,
+      "hideOnFrame"  =>   9999,
+      "stateStart"   =>   array( 250,  260,  1,  45,  $this->graphic_push_A),
+      "stateEnd"     =>   array( 250,  260,  .7,  45,  $this->graphic_push_A_fade),
+    ));
 
   }
 
 
-  /*
+  /*** #success
+  *
+  * --------------
+  * SUCCESS SCREEN  => screen loop
+  * --------------
+  *
+  ***/
+  public function succesScreen(){
+
+    if ( count($this->levels) == $this->currentLevel+1 ) {
+
+      $this->drawText('BOOOOM|you|beat|simon',100,100,LaserColor::BLUE,1);
+
+    } else {
+
+      $this->drawText('GREAT|you|beat|simon',50,50,LaserColor::BLUE,1);
+
+      $this->drawShape(400,400,1.2,0,$this->graphic_BT_X);
+
+    }
+
+  }
+
+
+  /*** #error
+  *
+  * ------------
+  * ERROR SCREEN  => screen loop
+  * ------------
+  *
+  ***/
+  public function errorrScreen(){
+
+    //$this->drawText('ERROR',100,200,LaserColor::RED,8);
+
+  }
+
+
+  /*** #level
   *
   * ----------
   * LEVEL PLAY  => next level if complete
   * ----------
   *
-  */
+  ***/
 	public function playLevel(){
 
 		if ( $this->levelStep < count( $this->levels[$this->currentLevel] ) ) {
@@ -399,13 +601,87 @@ class SIMONLAZER {
 	}
 
 
-  /*
+  /*** #control
+  *
+  * ------------
+  * CONTROL PUSH  => ...
+  * ------------
+  *
+  ***/
+  public function pushControl(){
+
+   $keyListener = XboxKey::getKeys();
+
+   switch( $keyListener[0] ) {
+
+     case XboxKey::P1_X :
+
+      $this->pushX = true;
+      $this->pushY = false;
+      $this->pushB = false;
+      $this->pushA = false;
+
+     break;
+
+     case XboxKey::P1_Y :
+
+      $this->pushX = false;
+      $this->pushY = true;
+      $this->pushB = false;
+      $this->pushA = false;
+
+     break;
+
+     case XboxKey::P1_B :
+
+      $this->pushX = false;
+      $this->pushY = false;
+      $this->pushB = true;
+      $this->pushA = false;
+
+     break;
+
+     case XboxKey::P1_A :
+
+      $this->pushX = false;
+      $this->pushY = false;
+      $this->pushB = false;
+      $this->pushA = true;
+
+     break;
+
+     case XboxKey::P1_ARROW_RIGHT :
+
+       $this->levelSubScreen = 'outro';
+
+     break;
+
+     case XboxKey::P1_ARROW_LEFT :
+
+       $this->screen = 'start';
+
+     break;
+
+     default:
+
+       $this->pushX = false;
+       $this->pushY = false;
+       $this->pushB = false;
+       $this->pushA = false;
+
+      break;
+
+   }
+
+  }
+
+  /*** #control
   *
   * ------------
   * CONTROL MENU  => ...
   * ------------
   *
-  */
+  ***/
 	public function menuControl(){
 
    $keyListener = XboxKey::getKeys();
@@ -420,6 +696,8 @@ class SIMONLAZER {
 
      case XboxKey::P1_ARROW_RIGHT :
 
+       $this->levelSubScreen = 'outro';
+
      break;
 
      case XboxKey::P1_ARROW_LEFT :
@@ -433,13 +711,13 @@ class SIMONLAZER {
   }
 
 
-  /*
+  /*** #control
   *
   * ---------------
   * CONTROL SUCCESS  => ...
   * ---------------
   *
-  */
+  ***/
   public function successControl(){
 
    $keyListener = XboxKey::getKeys();
@@ -464,13 +742,13 @@ class SIMONLAZER {
  }
 
 
-  /*
+  /*** #control
   *
   * ---------------
-  * CONTROL XXXXXXX  => ...
+  * CONTROL ERROR  => ...
   * ---------------
   *
-  */
+  ***/
   public function errorControl(){
 
    $keyListener = XboxKey::getKeys();
@@ -494,13 +772,13 @@ class SIMONLAZER {
   }
 
 
-  /*
+  /*** #level
   *
   * ---------------
-  * XXXXXXX  => ...
+  * recordPress  => ...
   * ---------------
   *
-  */
+  ***/
   public function recordPress(){
 
 		$keyListener = XboxKey::getKeys();
@@ -556,13 +834,13 @@ class SIMONLAZER {
 	}
 
 
-  /*
+  /*** #level
   *
   * ---------------
-  * XXXXXXX  => ...
+  * checkPRESS  => ...
   * ---------------
   *
-  */
+  ***/
 	public function checkPRESS($key){
 
 		if ( $this->levels[$this->currentLevel][$this->levelCheck] == $key ) {
@@ -582,13 +860,13 @@ class SIMONLAZER {
 	}
 
 
-  /*
+  /*** #level
   *
-  * ---------------
-  * XXXXXXX  => ...
-  * ---------------
+  * -----
+  * PRESS  => ...
+  * -----
   *
-  */
+  ***/
 	public function PRESS($key) {
 
 		switch ( $key ) {
@@ -598,7 +876,7 @@ class SIMONLAZER {
         $this->graphic_SIMON_PRESS[0]['color'] = LaserColor::BLUE;
         $this->graphic_SIMON_PRESS[1]['color'] = LaserColor::BLUE;
         $this->graphic_SIMON_PRESS[2]['color'] = LaserColor::BLUE;
-        $this->drawShape(125,250,1,$this->graphic_SIMON_PRESS);
+        $this->drawShape(125,250,1,0,$this->graphic_SIMON_PRESS);
 
 			break;
 
@@ -607,7 +885,7 @@ class SIMONLAZER {
         $this->graphic_SIMON_PRESS[0]['color'] = LaserColor::RED;
         $this->graphic_SIMON_PRESS[1]['color'] = LaserColor::RED;
         $this->graphic_SIMON_PRESS[2]['color'] = LaserColor::RED;
-			  $this->drawShape(375,250,1,$this->graphic_SIMON_PRESS);
+			  $this->drawShape(375,250,1,0,$this->graphic_SIMON_PRESS);
 
       break;
 
@@ -616,7 +894,7 @@ class SIMONLAZER {
         $this->graphic_SIMON_PRESS[0]['color'] = LaserColor::YELLOW;
         $this->graphic_SIMON_PRESS[1]['color'] = LaserColor::YELLOW;
         $this->graphic_SIMON_PRESS[2]['color'] = LaserColor::YELLOW;
-        $this->drawShape(250,175,1,$this->graphic_SIMON_PRESS);
+        $this->drawShape(250,175,1,0,$this->graphic_SIMON_PRESS);
 
 			break;
 
@@ -625,7 +903,7 @@ class SIMONLAZER {
         $this->graphic_SIMON_PRESS[0]['color'] = LaserColor::GREEN;
         $this->graphic_SIMON_PRESS[1]['color'] = LaserColor::GREEN;
         $this->graphic_SIMON_PRESS[2]['color'] = LaserColor::GREEN;
-        $this->drawShape(250,375,1,$this->graphic_SIMON_PRESS);
+        $this->drawShape(250,375,1,0,$this->graphic_SIMON_PRESS);
 
 			break;
 
@@ -635,14 +913,86 @@ class SIMONLAZER {
 
 	}
 
-  /*
+  /*** #tool
+  *
+  * --------------
+  * GENERATE LEVEL
+  * --------------
+  *
+  ***/
+  public function levelGenerate($num = 1) {
+
+    $key_array = array("X", "Y", "B", "A");
+    $level = array();
+
+    for ( $i=0; $i<=($num-1); $i++ ) {
+
+      $random = array_rand($key_array);
+      $level[$i] = $key_array[$random];
+
+    }
+
+    return $level;
+
+  }
+
+  /*** #tool
+  *
+  * -------------
+  * ANIMATE SHAPE => anim drawshape
+  * -------------
+  *
+  ***/
+  public function animShape( $params ){
+
+    $id = $params['id'];
+    $frameCount = $params['frameBase'];
+    $show = $params['showOnFrame'];
+    $hide = $params['hideOnFrame'];
+    $delay = $params['animDelay'];
+    $duration = $params['animDuration'];
+    $drawShape_start = $params['stateStart'];
+    $drawShape_end = $params['stateEnd'];
+
+    if ( $frameCount >= $show && $frameCount <= $hide  ) {
+
+      if ( $frameCount <= ($delay + $duration) ) {
+
+        if (  $frameCount <= $delay  ) {
+
+          $this->drawShape( $drawShape_start[0],  $drawShape_start[1],  $drawShape_start[2],  $drawShape_start[3],  $drawShape_start[4] );
+
+        } else if (  $frameCount >= $delay  ) {
+
+          $animX = floor($drawShape_start[0] + ((($drawShape_end[0] - $drawShape_start[0])/$duration)*(($frameCount)-$delay)) );
+          $animY = floor($drawShape_start[1] + ((($drawShape_end[1] - $drawShape_start[1])/$duration)*(($frameCount)-$delay)) );
+          $animZoom = $drawShape_start[2] + ((($drawShape_end[2] - $drawShape_start[2])/$duration)*(($frameCount)-$delay));
+          $animDeg = floor($drawShape_start[3] + ((($drawShape_end[3] - $drawShape_start[3])/$duration)*(($frameCount)-$delay)) );
+
+          $this->drawShape( $animX,  $animY,  $animZoom,  $animDeg,  $drawShape_start[4] );
+
+        }
+
+      } else {
+
+        $this->drawShape( $drawShape_end[0],  $drawShape_end[1],  $drawShape_end[2],  $drawShape_end[3],  $drawShape_end[4] );
+
+      }
+
+    }
+
+    //echo 'ID:' . $id . ' Frame(' . $frameCount . ') $animZoom = ' . $animZoom . ' $animX = ' . $animX . ' $animY = ' . $animY . PHP_EOL;
+
+  }
+
+  /*** #tool
   *
   * ----------
   * DRAW SHAPE
   * ----------
   *
-  */
-  public function drawShape($x,$y,$zoom,$items){
+  ***/
+  public function drawShape($x,$y,$zoom,$deg,$items){
 
     foreach ( $items as $item ) {
 
@@ -650,57 +1000,71 @@ class SIMONLAZER {
       $type = $item['type'];
       $origin = $item['origin'];
 
+      //get bigX and bigY
       $bigX = 0;
       $bigY = 0;
+      foreach ( $item['coord'] as $coords_key => $coords ) {
+
+        foreach ($coords as $key => $coord) {
+
+          if ( $key == 0 || $key == 2 ) {
+            if ( $bigX < $coord ) $bigX = $coord*$zoom;
+          }
+
+          if ( $key == 1 || $key == 3 ) {
+            if ( $bigY < $coord ) $bigY = $coord*$zoom;
+          }
+
+        }
+
+      }
+
+      //apply rotation
       foreach ( $item['coord'] as $key => $coords ) {
 
-          if ( $bigX < $coords[0] ) $bigX = $coords[0]*$zoom;
-          if ( $bigY1 < $coords[1] ) $bigY = $coords[1]*$zoom;
-          if ( $bigY < $coords[2] ) $bigX = $coords[2]*$zoom;
-          if ( $bigY < $coords[3] ) $bigY = $coords[3]*$zoom;
+          $x1 = $coords[0]*$zoom;
+          $y1 = $coords[1]*$zoom;
+          $x2 = $coords[2]*$zoom;
+          $y2 = $coords[3]*$zoom;
+
+          switch ( $origin ) {
+
+            case 'center':
+              if ( $type != 'circle' ) {
+                $x1 = $x1-($bigX/2);
+                $y1 = $y1-($bigY/2);
+                $x2 = $x2-($bigX/2);
+                $y2 = $y2-($bigY/2);
+              }
+            break;
+
+          }
+
+          $temp_x1 = $x1 * cos(deg2rad($deg)) - $y1 * sin(deg2rad($deg));
+          $temp_y1 = $x1 * sin(deg2rad($deg)) + $y1 * cos(deg2rad($deg));
+          $temp_x2 = $x2 * cos(deg2rad($deg)) - $y2 * sin(deg2rad($deg));
+          $temp_y2 = $x2 * sin(deg2rad($deg)) + $y2 * cos(deg2rad($deg));
+
+          $item['coord'][$key][0] = $temp_x1;
+          $item['coord'][$key][1] = $temp_y1;
+          $item['coord'][$key][2] = $temp_x2;
+          $item['coord'][$key][3] = $temp_y2;
 
       }
 
       foreach ( $item['coord'] as $key => $coords  ) {
 
-        $x1 = $coords[0]*$zoom;
-        $y1 = $coords[1]*$zoom;
-        $x2 = $coords[2]*$zoom;
-        $y2 = $coords[3]*$zoom;
+        //apply zoom
+        $x1 = $coords[0];
+        $y1 = $coords[1];
+        $x2 = $coords[2];
+        $y2 = $coords[3];
 
+        //apply global pos
         $x1 += $x;
         $y1 += $y;
         $x2 += $x;
         $y2 += $y;
-
-        switch ( $origin ) {
-
-          case 'left':
-            if ( $type == 'circle' ) {
-              $x1 = $x1+($bigX/2);
-              $y1 = $y1+($bigY/2);
-              $x2 = $x2+($bigX/2);
-              $y2 = $y2+($bigY/2);
-            }
-          break;
-
-          case 'center':
-            if ( $type != 'circle' ) {
-              $x1 = $x1-($bigX/2);
-              $y1 = $y1-($bigY/2);
-              $x2 = $x2-($bigX/2);
-              $y2 = $y2-($bigY/2);
-            }
-          break;
-
-          case 'right':
-            $x1 = $x1-$bigX;
-            $y1 = $y1-$bigY;
-            $x2 = $x2-$bigX;
-            $y2 = $y2-$bigY;
-          break;
-
-        }
 
         switch ($type) {
 
@@ -713,7 +1077,7 @@ class SIMONLAZER {
           break;
 
           case 'circle':
-            $dim = $coords[2]*$zoom;
+            $dim = floor($coords[2]*$zoom);
             if ( !$dim ) $dim = 20;
             $this->game->addCircle(floor($x1),floor($y1),floor($dim),$color);
           break;
@@ -727,13 +1091,13 @@ class SIMONLAZER {
   }
 
 
-  /*
+  /*** #tool
   *
   * ---------
   * DRAW TEXT
   * ---------
   *
-  */
+  ***/
   public function drawText($str,$str_x,$str_y,$color,$size) {
 
     $str = strtoupper( $str );
@@ -760,44 +1124,431 @@ class SIMONLAZER {
     }
 
   }
-  public function drawText2($str,$str_x,$str_y,$color,$size) {
 
-    $size = 1;
 
-    $lines = explode('|',$str);
+  /*** #graphics
+  *
+  * -------------
+  * DRAW GRAPHICS
+  * -------------
+  *
+  ***/
+  public function setGraphics(){
 
-    foreach ( $lines as $key_line => $line) {
+    /*
+    | LOGO #graphics
+    */
+    $this->graphic_LOGO = array(
 
-      $chars = str_split($line);
+      array(
+        "id" => "S",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::BLUE,
+        "coord" => array(
+          array(0,89,0,69),
+          array(0,69,66,69),
+          array(66,69,66,66),
+          array(66,66,0,66),
+          array(0,66,0,23),
+          array(0,23,85,23),
+          array(85,23,85,42),
+          array(85,42,19,42),
+          array(19,42,19,46),
+          array(19,46,85,46),
+          array(85,46,85,89),
+          array(85,89,0,89),
+        )
+      ),
 
-      $span = 0;
-      foreach ($chars as $key_char => $char) {
+      array(
+        "id" => "I",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::BLUE,
+        "coord" => array(
+          array(94,89,94,23),
+          array(94,23,113,23),
+          array(113,23,113,89),
+          array(113,89,94,89),
+        )
+      ),
 
-        //if ( $key_char != 0 && $chars[$key_char-1] == 'I' ) $span += -(20*$size);
-        //if ( $key_char != 0 && $chars[$key_char-1] == 'W' ) $span += 10*$size;
+      array(
+        "id" => "M",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::BLUE,
+        "coord" => array(
+          array(122,89,122,19),
+          array(122,19,165,62),
+          array(165,62,208,19),
+          array(208,19,208,89),
+          array(208,89,188,89),
+          array(188,89,188,66),
+          array(188,66,165,89),
+          array(165,89,142,66),
+          array(142,66,142,89),
+          array(142,89,122,89),
+        )
+      ),
 
-        $x = ((60*$size)*$key_char)+$span;
-        $y = (90*$size)*$key_line;
+      array(
+        "id" => "0",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::BLUE,
+        "coord" => array(
+          array(217,89,217,23),
+          array(217,23,302,23),
+          array(302,23,302,89),
+          array(302,89,217,89),
+          array(283,69,283,42),
+          array(283,42,236,42),
+          array(236,42,236,69),
+          array(236,69,283,69),
+        )
+      ),
 
-        $x += $str_x;
-        $y += $str_y;
+      array(
+        "id" => "N",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::BLUE,
+        "coord" => array(
+          array(330,46,330,89),
+          array(330,89,311,89),
+          array(311,89,311,0),
+          array(311,0,377,66),
+          array(377,66,377,23),
+          array(377,23,396,23),
+          array(396,23,396,112),
+          array(396,112,330,46),
+        )
+      ),
 
-        $this->drawChar($char,floor($x) ,floor($y),$color,$size);
+      array(
+        "id" => "decoration",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::LIME,
+        "coord" => array(
+          array(182,117,0,117),
+        )
+      ),
 
-      }
+      array(
+        "id" => "L",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::LIME,
+        "coord" => array(
+          array(197,128,197,105),
+          array(197,105,203,105),
+          array(203,105,203,121),
+          array(203,121,227,121),
+          array(227,121,227,128),
+          array(227,128,197,128),
+        )
+      ),
 
-    }
+      array(
+        "id" => "A",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::LIME,
+        "coord" => array(
+          array(231,128,262,98),
+          array(262,98,262,128),
+          array(262,128,255,128),
+          array(255,128,255,114),
+          array(255,114,241,128),
+          array(241,128,231,128),
+        )
+      ),
+
+      array(
+        "id" => "Z",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::LIME,
+        "coord" => array(
+          array(265,128,281,112),
+          array(281,112,266,112),
+          array(266,112,266,105),
+          array(266,105,298,105),
+          array(298,105,281,121),
+          array(281,121,296,121),
+          array(296,121,296,128),
+          array(296,128,265,128),
+        )
+      ),
+
+      array(
+        "id" => "E",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::LIME,
+        "coord" => array(
+          array(301,128,301,105),
+          array(301,105,331,105),
+          array(331,105,331,112),
+          array(331,112,308,112),
+          array(308,112,308,113),
+          array(308,113,331,113),
+          array(331,113,324,120),
+          array(324,120,308,120),
+          array(308,120,308,121),
+          array(308,121,331,121),
+          array(331,121,331,128),
+          array(331,128,301,128),
+        )
+      ),
+
+      array(
+        "id" => "R",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::LIME,
+        "coord" => array(
+          array(344,113,359,113),
+          array(359,113,359,112),
+          array(359,112,343,112),
+          array(343,112,343,128),
+          array(343,128,336,128),
+          array(336,128,336,105),
+          array(336,105,366,105),
+          array(366,105,366,120),
+          array(366,120,361,120),
+          array(361,120,367,127),
+          array(367,127,367,137),
+          array(367,137,344,113),
+        )
+      )
+
+    );
+
+    /*
+    | BUTTON X #graphics
+    */
+    $this->graphic_BT_X = array(
+
+      array(
+        "id" => "btcircle",
+        "type" => "circle",
+        "origin" => "center",
+        "color" => LaserColor::BLUE,
+        "coord" => array(
+          array(0,0,80,80),
+        )
+      ),
+      array(
+        "id" => "X",
+        "type" => "line",
+        "origin" => "center",
+        "color" => LaserColor::BLUE,
+        "coord" => array(
+          array(0,0,30,30),
+          array(0,30,30,0),
+        )
+      ),
+
+    );
+
+    /*
+    | SIMON ON PRESS #graphics
+    */
+    $this->graphic_SIMON_PRESS = array(
+
+      array(
+        "id" => "",
+        "type" => "line",
+        "origin" => "center",
+        "color" => LaserColor::BLUE,
+        "coord" => array(
+          array(232,116,116,232),
+          array(116,232,0,116),
+          array(0,116,116,0),
+          array(116,0,232,116),
+        )
+      ),
+      array(
+        "id" => "",
+        "type" => "line",
+        "origin" => "center",
+        "color" => LaserColor::BLUE,
+        "coord" => array(
+          array(214,116,116,214),
+          array(116,214,17,116),
+          array(17,116,116,17),
+          array(116,17,214,116),
+        )
+      ),
+      array(
+        "id" => "",
+        "type" => "line",
+        "origin" => "center",
+        "color" => LaserColor::BLUE,
+        "coord" => array(
+          array(195,116,116,195),
+          array(116,195,36,116),
+          array(36,116,116,36),
+          array(116,36,195,116),
+        )
+      ),
+
+
+    );
+
+    /*
+    | SIMON BACK #graphics
+    */
+    $this->graphic_push_Y = array(
+      array(
+        "id" => "backY",
+        "type" => "line",
+        "axis" => "65,65",
+        "origin" => "left",
+        "color" => LaserColor::YELLOW,
+        "coord" => array(
+
+          //Y
+          array(134,104,106,104),
+          array(106,104,106,132),
+          array(106,104,92,90),
+
+          //back
+          array(158,158,30,158),
+          array(30,158,30,72),
+          array(30,72,72,72),
+          array(72,72,72,30),
+          array(72,30,158,30),
+          array(158,30,158,158),
+
+          array(72,72,0,0),
+          array(30,72,0,0),
+          array(72,30,0,0),
+          array(0,0,158,30),
+          array(0,0,30,158),
+
+        )
+      ),
+    );
+    $this->graphic_push_B = array(
+      array(
+        "id" => "backY",
+        "type" => "line",
+        "axis" => "65,65",
+        "origin" => "left",
+        "color" => LaserColor::RED,
+        "coord" => array(
+
+          //B
+          array(105,76,77,105),
+          array(126,98,112,112),
+          array(119,119,105,133),
+          array(105,76,126,98),
+          array(77,105,105,133),
+          array(91,91,119,119),
+
+          //back
+          array(158,158,30,158),
+          array(30,158,30,72),
+          array(30,72,72,72),
+          array(72,72,72,30),
+          array(72,30,158,30),
+          array(158,30,158,158),
+
+          array(72,72,0,0),
+          array(30,72,0,0),
+          array(72,30,0,0),
+          array(0,0,158,30),
+          array(0,0,30,158),
+
+        )
+      ),
+    );
+    $this->graphic_push_A = array(
+      array(
+        "id" => "backY",
+        "type" => "line",
+        "axis" => "65,65",
+        "origin" => "left",
+        "color" => LaserColor::GREEN,
+        "coord" => array(
+
+          //A
+          array(91,89,133,103),
+          array(105,132,91,89),
+          array(102,121,123,100),
+
+          //back
+          array(158,158,30,158),
+          array(30,158,30,72),
+          array(30,72,72,72),
+          array(72,72,72,30),
+          array(72,30,158,30),
+          array(158,30,158,158),
+
+          array(72,72,0,0),
+          array(30,72,0,0),
+          array(72,30,0,0),
+          array(0,0,158,30),
+          array(0,0,30,158),
+
+        )
+      ),
+    );
+    $this->graphic_push_X = array(
+      array(
+        "id" => "backY",
+        "type" => "line",
+        "axis" => "65,65",
+        "origin" => "left",
+        "color" => LaserColor::BLUE,
+        "coord" => array(
+
+          //X
+          array(134,104,78,104),
+          array(106,76,106,132),
+
+          //back
+          array(158,158,30,158),
+          array(30,158,30,72),
+          array(30,72,72,72),
+          array(72,72,72,30),
+          array(72,30,158,30),
+          array(158,30,158,158),
+
+          array(72,72,0,0),
+          array(30,72,0,0),
+          array(72,30,0,0),
+          array(0,0,158,30),
+          array(0,0,30,158),
+
+        )
+      ),
+    );
+
+    $fadeColor = LaserColor::FUCHSIA;
+    $this->graphic_push_X_fade = $this->graphic_push_X;
+    $this->graphic_push_Y_fade = $this->graphic_push_Y;
+    $this->graphic_push_B_fade = $this->graphic_push_B;
+    $this->graphic_push_A_fade = $this->graphic_push_A;
+    $this->graphic_push_X_fade[0]['color'] = $fadeColor;
+    $this->graphic_push_Y_fade[0]['color'] = $fadeColor;
+    $this->graphic_push_B_fade[0]['color'] = $fadeColor;
+    $this->graphic_push_A_fade[0]['color'] = $fadeColor;
 
   }
 
-
-  /*
+  /*** #tool #fonts
   *
   * --------------
   * DRAW CHARACTER
   * --------------
   *
-  */
+  ***/
   public function drawChar($char,$posx,$posy,$color,$size) {
 
     switch ($char) {
@@ -1259,7 +2010,7 @@ class SIMONLAZER {
 
     if ( $coord ) {
 
-      $this->drawShape($posx,$posy,$size,array(
+      $this->drawShape($posx,$posy,$size,0,array(
 
         array(
           "id" => "chart",
@@ -1272,291 +2023,6 @@ class SIMONLAZER {
       ));
 
     }
-
-  }
-
-  public function setGraphics(){
-
-    /*
-    | LOGO
-    */
-    $this->graphic_LOGO = array(
-
-      array(
-        "id" => "S",
-        "type" => "line",
-        "origin" => "left",
-        "color" => LaserColor::BLUE,
-        "coord" => array(
-          array(0,89,0,69),
-          array(0,69,66,69),
-          array(66,69,66,66),
-          array(66,66,0,66),
-          array(0,66,0,23),
-          array(0,23,85,23),
-          array(85,23,85,42),
-          array(85,42,19,42),
-          array(19,42,19,46),
-          array(19,46,85,46),
-          array(85,46,85,89),
-          array(85,89,0,89),
-        )
-      ),
-
-      array(
-        "id" => "I",
-        "type" => "line",
-        "origin" => "left",
-        "color" => LaserColor::BLUE,
-        "coord" => array(
-          array(94,89,94,23),
-          array(94,23,113,23),
-          array(113,23,113,89),
-          array(113,89,94,89),
-        )
-      ),
-
-      array(
-        "id" => "M",
-        "type" => "line",
-        "origin" => "left",
-        "color" => LaserColor::BLUE,
-        "coord" => array(
-          array(122,89,122,19),
-          array(122,19,165,62),
-          array(165,62,208,19),
-          array(208,19,208,89),
-          array(208,89,188,89),
-          array(188,89,188,66),
-          array(188,66,165,89),
-          array(165,89,142,66),
-          array(142,66,142,89),
-          array(142,89,122,89),
-        )
-      ),
-
-      array(
-        "id" => "0",
-        "type" => "line",
-        "origin" => "left",
-        "color" => LaserColor::BLUE,
-        "coord" => array(
-          array(217,89,217,23),
-          array(217,23,302,23),
-          array(302,23,302,89),
-          array(302,89,217,89),
-          array(283,69,283,42),
-          array(283,42,236,42),
-          array(236,42,236,69),
-          array(236,69,283,69),
-        )
-      ),
-
-      array(
-        "id" => "N",
-        "type" => "line",
-        "origin" => "left",
-        "color" => LaserColor::BLUE,
-        "coord" => array(
-          array(330,46,330,89),
-          array(330,89,311,89),
-          array(311,89,311,0),
-          array(311,0,377,66),
-          array(377,66,377,23),
-          array(377,23,396,23),
-          array(396,23,396,112),
-          array(396,112,330,46),
-        )
-      ),
-
-      array(
-        "id" => "decoration",
-        "type" => "line",
-        "origin" => "left",
-        "color" => LaserColor::LIME,
-        "coord" => array(
-          array(182,117,0,117),
-        )
-      ),
-
-      array(
-        "id" => "L",
-        "type" => "line",
-        "origin" => "left",
-        "color" => LaserColor::LIME,
-        "coord" => array(
-          array(197,128,197,105),
-          array(197,105,203,105),
-          array(203,105,203,121),
-          array(203,121,227,121),
-          array(227,121,227,128),
-          array(227,128,197,128),
-        )
-      ),
-
-      array(
-        "id" => "A",
-        "type" => "line",
-        "origin" => "left",
-        "color" => LaserColor::LIME,
-        "coord" => array(
-          array(231,128,262,98),
-          array(262,98,262,128),
-          array(262,128,255,128),
-          array(255,128,255,114),
-          array(255,114,241,128),
-          array(241,128,231,128),
-        )
-      ),
-
-      array(
-        "id" => "Z",
-        "type" => "line",
-        "origin" => "left",
-        "color" => LaserColor::LIME,
-        "coord" => array(
-          array(265,128,281,112),
-          array(281,112,266,112),
-          array(266,112,266,105),
-          array(266,105,298,105),
-          array(298,105,281,121),
-          array(281,121,296,121),
-          array(296,121,296,128),
-          array(296,128,265,128),
-        )
-      ),
-
-      array(
-        "id" => "E",
-        "type" => "line",
-        "origin" => "left",
-        "color" => LaserColor::LIME,
-        "coord" => array(
-          array(301,128,301,105),
-          array(301,105,331,105),
-          array(331,105,331,112),
-          array(331,112,308,112),
-          array(308,112,308,113),
-          array(308,113,331,113),
-          array(331,113,324,120),
-          array(324,120,308,120),
-          array(308,120,308,121),
-          array(308,121,331,121),
-          array(331,121,331,128),
-          array(331,128,301,128),
-        )
-      ),
-
-      array(
-        "id" => "R",
-        "type" => "line",
-        "origin" => "left",
-        "color" => LaserColor::LIME,
-        "coord" => array(
-          array(344,113,359,113),
-          array(359,113,359,112),
-          array(359,112,343,112),
-          array(343,112,343,128),
-          array(343,128,336,128),
-          array(336,128,336,105),
-          array(336,105,366,105),
-          array(366,105,366,120),
-          array(366,120,361,120),
-          array(361,120,367,127),
-          array(367,127,367,137),
-          array(367,137,344,113),
-        )
-      )
-
-    );
-
-    /*
-    | BUTTON
-    */
-    $this->graphic_BT_X = array(
-
-      array(
-        "id" => "btcircle",
-        "type" => "circle",
-        "origin" => "center",
-        "color" => LaserColor::BLUE,
-        "coord" => array(
-          array(0,0,80,80),
-        )
-      ),
-      array(
-        "id" => "X",
-        "type" => "line",
-        "origin" => "center",
-        "color" => LaserColor::BLUE,
-        "coord" => array(
-          array(0,0,30,30),
-          array(0,30,30,0),
-        )
-      ),
-
-    );
-
-    /*
-    | PRESS SIMON
-    */
-    $this->graphic_SIMON_PRESS = array(
-
-      array(
-        "id" => "",
-        "type" => "line",
-        "origin" => "center",
-        "color" => LaserColor::BLUE,
-        "coord" => array(
-          array(232,116,116,232),
-          array(116,232,0,116),
-          array(0,116,116,0),
-          array(116,0,232,116),
-        )
-      ),
-      array(
-        "id" => "",
-        "type" => "line",
-        "origin" => "center",
-        "color" => LaserColor::BLUE,
-        "coord" => array(
-          array(214,116,116,214),
-          array(116,214,17,116),
-          array(17,116,116,17),
-          array(116,17,214,116),
-        )
-      ),
-      array(
-        "id" => "",
-        "type" => "line",
-        "origin" => "center",
-        "color" => LaserColor::BLUE,
-        "coord" => array(
-          array(195,116,116,195),
-          array(116,195,36,116),
-          array(36,116,116,36),
-          array(116,36,195,116),
-        )
-      ),
-
-
-    );
-    /*
-    $this->graphic_layer_base = array(
-      array(
-        "id" => "red",
-        "type" => "line",
-        "origin" => "left",
-        "color" => LaserColor::RED,
-        "coord" => array(
-          array(195,116,116,195),
-          array(116,195,36,116),
-          array(36,116,116,36),
-          array(116,36,195,116),
-        )
-      ),
-    );
-*/
 
   }
 
