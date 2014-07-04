@@ -130,6 +130,9 @@ Envoie l'instruction client STOP au serveur.
 #####LaserFont LaserFont::__construct(string $filename)#####
 Charge la police ELFC au chemin d'accès donné et renvoie un pointeur vers cette police ce qui permettra de faire un render().
 
+#####array LaserFont::getCharsize()#####
+Après avoir chargé une font, permet de récupérer la largeur des caractères sous forme de tableau associatif avec comme clés les caractères et comme valeurs la largeur du caractère (entre 0 et 8).
+
 #####void LaserFont::render(LaserGame $ctx, string $text, int $x, int $y, int int LaserColor::$color, int $coeff)#####
 Dessine le texte $text.
 * $ctx : référence vers le jeu de type LaserGame
