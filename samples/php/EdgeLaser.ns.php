@@ -178,7 +178,8 @@
 
 		class LaserGame
 		{
-			const HOST = '192.168.1.28';
+			//const HOST = '192.168.1.29';
+			const HOST = '127.0.0.1';
 			const PORT = 4242;
 
 			//Game management
@@ -382,7 +383,7 @@
 
 				return $this;
 			}
-
+			
 			public function requireKinect()
 			{
 				$cmd = pack('C', $this->gameid) . 'K';
@@ -395,6 +396,7 @@
 		class LaserFont
 		{
 			private $letters;
+			private $charsize;
 			private $spacing;
 
 			public function __construct($filename)
@@ -409,6 +411,7 @@
 					if($header)
 					{
 						$this->spacing = unpack('C', $line)[1];
+						$charsize[' '] = $this->spacing;
 						$header = false;
 						continue;
 					}
@@ -418,13 +421,15 @@
 					$charnum = 0;
 					$line = 0;
 					$create_line = false;
+					$x_value = true;
 
 					$letter = true;
 					foreach ($chars as $char)
 					{
 						if($letter)
-						{
+						{							
 							$lettername = chr(unpack('C', $char)[1]);
+							$charsize[$lettername] = 0;
 							$letter = false;
 							continue;
 						}
@@ -435,8 +440,12 @@
 							$create_line = false;
 						}
 
-						$letter_lines[$lettername][$line][] = unpack('C', $char)[1];
-
+						$next_val = unpack('C', $char)[1];
+						$letter_lines[$lettername][$line][] = $next_val;
+						
+						if($x_value && $next_val > $charsize[$lettername])	$charsize[$lettername] =  $next_val;;
+						$x_value = !$x_value;
+						
 						if($charnum++ == 3)
 						{
 							$create_line = true;
@@ -446,6 +455,7 @@
 				}
 
 				$this->letters = $letter_lines;
+				$this->charsize = $charsize;
 
 				echo '[EdgeLaserPHP] Font ' . basename($filename) . ' ready-to-use, ' . (count($data) - 1) . ' chars, ' . $this->spacing . ' spacing' . PHP_EOL;
 			}
@@ -472,6 +482,11 @@
 						$x += $this->spacing * 2 * $coeff;
 					}
 				}
+			}
+			
+			public function getCharsize()
+			{
+				return $this->charsize;
 			}
 		}
 
