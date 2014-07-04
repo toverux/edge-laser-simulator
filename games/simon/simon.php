@@ -63,19 +63,12 @@ class SIMONLAZER {
 
     echo 'SIMON: init' . PHP_EOL;
 
-  		/*
-      | Level screen
-      */
-  		$this->levels = array(
-  			array("X","X","A","A"),
-  			array("X","B","B","B"),
-  			array("Y","B","Y","B"),
-  		);
-      $this->levelGenerate = $this->levelGenerate( 4 );
-
-  		//TIMER
-  		$this->timerDelay = 10;
-  		$this->timer = $this->timerDelay;
+  	/*
+     | Generate level
+    */
+    $this->levelArray = $this->levelGenerate( 20 );
+    //$this->levelArray = array('X','Y','B','A');
+    echo implode(',', $this->levelArray) . PHP_EOL;
 
     /*
     |
@@ -264,27 +257,18 @@ class SIMONLAZER {
   public function levelInit(){
 
     $this->levelScreen_timer_global = 0;
-
-    $this->levels_check = array(
-      array(),
-      array(),
-      array(),
-    );
-    $this->levels_state = array(
-      "uncomplete",
-      "uncomplete",
-      "uncomplete",
-    );
-    $this->levelCheck = 0;
-    $this->currentLevel = 0;
-    $this->levelStep = 0;
-    
-    //temp
-    $this->levelScreen_key_push = 'X';
+    $this->levelScreen_timer_CPU = 0;
 
     $this->levelSubScreen = 'intro';
+    $this->levelState = 'CPU';
 
-    $this->player_level_record = array();
+    $this->levelPosMax = 0;
+    $this->levelPosReader = 0;
+    $this->levelPos = 0;
+
+    $this->pushSubmit = null;
+    $this->pushSubmitArray = array();
+    $this->player_score = 0;
 
   }
 
@@ -308,10 +292,40 @@ class SIMONLAZER {
 
       case 'play':
 
-        $this->pushCPU();
-        $this->pushControl();
+        if ( $this->levelState == 'CPU' ) {
+
+          $this->pushCPU();
+          $this->drawText('LOOK',10,470,LaserColor::BLUE,.3);
+
+          $this->levelScreen_timer_CPU++;
+
+        }
+
+        if ( $this->levelState == 'player' ) {
+
+          $this->pushPlayer();
+          $this->drawText('PLAY',10,470,LaserColor::LIME,.3);
+
+        }
+
+        if ( $this->levelState == 'success' ) {
+
+          $this->levelNext();
+          $this->drawText('SUCCESS',450,470,LaserColor::LIME,.3);
+
+        }
+
+        if ( $this->levelState == 'error' ) {
+
+          $this->levelReplay();
+          $this->drawText('ERROR',450,470,LaserColor::RED,.3);
+
+        }
+
+        $this->drawText('SCORE',10,10,LaserColor::YELLOW,.3);
 
         $this->levelScreenPlay();
+
       break;
 
       case 'outro':
@@ -333,8 +347,217 @@ class SIMONLAZER {
   public function pushCPU(){
 
 
+    if ( $this->levelPosReader <= count($this->levelArray) ) { //if not finish level array
+
+      $display = ($this->levelPosReader*8)+10;
+
+      if ( $this->levelScreen_timer_CPU == $display ){
+
+        $this->pushNeeded = $this->levelArray[$this->levelPosReader];
+
+        switch ( $this->pushNeeded ) { // display the current key
+
+          case 'X':
+            $this->pushX = true;
+            $this->pushY = false;
+            $this->pushB = false;
+            $this->pushA = false;
+          break;
+          case 'Y':
+            $this->pushX = false;
+            $this->pushY = true;
+            $this->pushB = false;
+            $this->pushA = false;
+          break;
+          case 'B':
+            $this->pushX = false;
+            $this->pushY = false;
+            $this->pushB = true;
+            $this->pushA = false;
+          break;
+          case 'A':
+            $this->pushX = false;
+            $this->pushY = false;
+            $this->pushB = false;
+            $this->pushA = true;
+          break;
+          default:
+            $this->pushX = false;
+            $this->pushY = false;
+            $this->pushB = false;
+            $this->pushA = false;
+          break;
+
+        }
+
+      }
+
+      if ( $this->levelScreen_timer_CPU == $display ){
+
+        if ( $this->levelPosReader <= $this->levelPosMax ) {
+
+            $this->levelPosReader++;
+
+        } else {
+
+          $this->levelState = 'player';
+
+        }
+
+      }
+
+    } else {
+
+      echo 'YOU BEAT SIMON' . PHP_EOL;
+
+    }
 
   }
+
+  /*** #control
+  *
+  * ------------
+  * CONTROL PUSH  => ...
+  * ------------
+  *
+  ***/
+  public function pushPlayer(){
+
+    $keyListener = XboxKey::getKeys();
+
+    switch( $keyListener[0] ) {
+
+      case XboxKey::P1_X :
+
+        $this->pushX = true;
+        $this->pushY = false;
+        $this->pushB = false;
+        $this->pushA = false;
+        $this->pushSubmit = 'X';
+        $this->keyRelease = false;
+
+      break;
+
+      case XboxKey::P1_Y :
+
+        $this->pushX = false;
+        $this->pushY = true;
+        $this->pushB = false;
+        $this->pushA = false;
+        $this->pushSubmit = 'Y';
+        $this->keyRelease = false;
+
+      break;
+
+      case XboxKey::P1_B :
+
+        $this->pushX = false;
+        $this->pushY = false;
+        $this->pushB = true;
+        $this->pushA = false;
+        $this->pushSubmit = 'B';
+        $this->keyRelease = false;
+
+      break;
+
+      case XboxKey::P1_A :
+
+        $this->pushX = false;
+        $this->pushY = false;
+        $this->pushB = false;
+        $this->pushA = true;
+        $this->pushSubmit = 'A';
+        $this->keyRelease = false;
+
+      break;
+
+      case XboxKey::P1_ARROW_RIGHT :
+
+        $this->levelSubScreen = 'outro';
+
+      break;
+
+      case XboxKey::P1_ARROW_LEFT :
+
+        $this->screen = 'start';
+
+      break;
+
+      default:
+
+       $this->pushX = false;
+       $this->pushY = false;
+       $this->pushB = false;
+       $this->pushA = false;
+       $this->keyRelease = true;
+
+      break;
+
+    }
+
+    if ( $this->keyRelease && $this->pushSubmit) {
+
+      $this->pushSubmitArray[$this->levelPos] = $this->pushSubmit;
+      $this->keyRelease = false;
+      $this->pushSubmit = null;
+
+      if ( $this->levelArray[$this->levelPos] == $this->pushSubmitArray[$this->levelPos] ){
+
+        if ( $this->levelPos == $this->levelPosMax ){
+
+          $this->levelState = 'success';
+
+        } else {
+
+          $this->levelPos++;
+
+        }
+
+      } else {
+
+        $this->levelState = 'error';
+
+      }
+
+    }
+
+  }
+
+  /*** #level
+  *
+  * ----------
+  * LEVEL NEXT
+  * ----------
+  *
+  ***/
+  public function levelNext(){
+
+    $this->levelPos = 0;
+    $this->pushSubmitArray = array();
+    $this->levelScreen_timer_CPU = 0;
+    $this->levelPosReader = 0;
+    $this->levelPosMax++;
+    $this->levelState = 'CPU';
+
+  }
+
+  /*** #level
+  *
+  * ------------
+  * LEVEL REPLAY
+  * ------------
+  *
+  ***/
+  public function levelReplay(){
+
+    $this->levelPos = 0;
+    $this->pushSubmitArray = array();
+    $this->levelScreen_timer_CPU = 0;
+    $this->levelPosReader = 0;
+    $this->levelState = 'CPU';
+
+  }
+
 
   /*** #level
   *
@@ -393,29 +616,9 @@ class SIMONLAZER {
 
     } else {
 
-      //$this->graphic_push_A[0]['color'] = LaserColor::FUCHSIA;
       $this->drawShape( 250,  260,  .7,  45,  $this->graphic_push_A_fade);
 
     }
-
-    /*
-    if ( count($this->levels[$this->currentLevel]) == count($this->levels_check[$this->currentLevel]) ) {
-
-      $this->screen = 'success';
-
-    }
-
-    if ( $this->levels_state[$this->currentLevel] == 'uncomplete' ){
-
-      $this->playLevel();
-
-    } else {
-
-      $this->recordPress();
-
-    }
-
-    */
 
   }
 
@@ -534,17 +737,8 @@ class SIMONLAZER {
   ***/
   public function succesScreen(){
 
-    if ( count($this->levels) == $this->currentLevel+1 ) {
-
-      $this->drawText('BOOOOM|you|beat|simon',100,100,LaserColor::BLUE,1);
-
-    } else {
-
-      $this->drawText('GREAT|you|beat|simon',50,50,LaserColor::BLUE,1);
-
-      $this->drawShape(400,400,1.2,0,$this->graphic_BT_X);
-
-    }
+    //$this->drawText('BOOOOM|you|beat|simon',100,100,LaserColor::BLUE,1);
+    //$this->drawText('GREAT|you|beat|simon',50,50,LaserColor::BLUE,1);
 
   }
 
@@ -563,117 +757,6 @@ class SIMONLAZER {
   }
 
 
-  /*** #level
-  *
-  * ----------
-  * LEVEL PLAY  => next level if complete
-  * ----------
-  *
-  ***/
-	public function playLevel(){
-
-		if ( $this->levelStep < count( $this->levels[$this->currentLevel] ) ) {
-
-			if ( $this->timer && $this->levels[$this->currentLevel][$this->levelStep] )  {
-
-				$pressed_keys = explode(',',$this->levels[$this->currentLevel][$this->levelStep]);
-
-				foreach ($pressed_keys as $key => $pressKey) {
-					$this->PRESS( $pressKey );
-				}
-
-				$this->timer--;
-
-			} else {
-
-				$this->timer = $this->timerDelay;
-				$this->levelStep++;
-
-			}
-
-		} else {
-
-			$this->levelStep = 0;
-			$this->levels_state[$this->currentLevel] = 'complete';
-
-		}
-
-	}
-
-
-  /*** #control
-  *
-  * ------------
-  * CONTROL PUSH  => ...
-  * ------------
-  *
-  ***/
-  public function pushControl(){
-
-   $keyListener = XboxKey::getKeys();
-
-   switch( $keyListener[0] ) {
-
-     case XboxKey::P1_X :
-
-      $this->pushX = true;
-      $this->pushY = false;
-      $this->pushB = false;
-      $this->pushA = false;
-
-     break;
-
-     case XboxKey::P1_Y :
-
-      $this->pushX = false;
-      $this->pushY = true;
-      $this->pushB = false;
-      $this->pushA = false;
-
-     break;
-
-     case XboxKey::P1_B :
-
-      $this->pushX = false;
-      $this->pushY = false;
-      $this->pushB = true;
-      $this->pushA = false;
-
-     break;
-
-     case XboxKey::P1_A :
-
-      $this->pushX = false;
-      $this->pushY = false;
-      $this->pushB = false;
-      $this->pushA = true;
-
-     break;
-
-     case XboxKey::P1_ARROW_RIGHT :
-
-       $this->levelSubScreen = 'outro';
-
-     break;
-
-     case XboxKey::P1_ARROW_LEFT :
-
-       $this->screen = 'start';
-
-     break;
-
-     default:
-
-       $this->pushX = false;
-       $this->pushY = false;
-       $this->pushB = false;
-       $this->pushA = false;
-
-      break;
-
-   }
-
-  }
 
   /*** #control
   *
@@ -727,7 +810,6 @@ class SIMONLAZER {
      case XboxKey::P1_X :
 
       $this->screen = 'level';
-      $this->currentLevel++;
 
      break;
 
@@ -772,147 +854,6 @@ class SIMONLAZER {
   }
 
 
-  /*** #level
-  *
-  * ---------------
-  * recordPress  => ...
-  * ---------------
-  *
-  ***/
-  public function recordPress(){
-
-		$keyListener = XboxKey::getKeys();
-
-		switch( $keyListener[0] ) {
-
-			case XboxKey::P1_Y :
-
-        echo 'pressY' . PHP_EOL;
-				$this->PRESS('Y');
-				$this->checkPRESS('Y');
-
-			break;
-
-			case XboxKey::P1_B :
-
-        echo 'pressB' . PHP_EOL;
-				$this->PRESS('B');
-				$this->checkPRESS('B');
-
-			break;
-
-			case XboxKey::P1_X :
-
-        echo 'pressX' . PHP_EOL;
-				$this->PRESS('X');
-				$this->checkPRESS('X');
-
-			break;
-
-			case XboxKey::P1_A :
-
-        echo 'pressA' . PHP_EOL;
-				$this->PRESS('A');
-				$this->checkPRESS('A');
-
-			break;
-
-			case XboxKey::P1_ARROW_RIGHT :
-
-				//$this->currentLevel++;
-
-			break;
-
-      case XboxKey::P1_ARROW_LEFT :
-
-        $this->screen = 'start';
-
-      break;
-
-		}
-
-	}
-
-
-  /*** #level
-  *
-  * ---------------
-  * checkPRESS  => ...
-  * ---------------
-  *
-  ***/
-	public function checkPRESS($key){
-
-		if ( $this->levels[$this->currentLevel][$this->levelCheck] == $key ) {
-
-			$this->levels_check[$this->currentLevel][$this->levelCheck] = $key;
-
-			$this->levelCheck++;
-
-		} else{
-
-			$this->levelCheck = 0;
-			$this->levels_check[$this->currentLevel] = array();
-			$this->levels_state[$this->currentLevel] = 'uncomplete';
-
-		}
-
-	}
-
-
-  /*** #level
-  *
-  * -----
-  * PRESS  => ...
-  * -----
-  *
-  ***/
-	public function PRESS($key) {
-
-		switch ( $key ) {
-
-			case 'X':
-
-        $this->graphic_SIMON_PRESS[0]['color'] = LaserColor::BLUE;
-        $this->graphic_SIMON_PRESS[1]['color'] = LaserColor::BLUE;
-        $this->graphic_SIMON_PRESS[2]['color'] = LaserColor::BLUE;
-        $this->drawShape(125,250,1,0,$this->graphic_SIMON_PRESS);
-
-			break;
-
-			case 'B':
-
-        $this->graphic_SIMON_PRESS[0]['color'] = LaserColor::RED;
-        $this->graphic_SIMON_PRESS[1]['color'] = LaserColor::RED;
-        $this->graphic_SIMON_PRESS[2]['color'] = LaserColor::RED;
-			  $this->drawShape(375,250,1,0,$this->graphic_SIMON_PRESS);
-
-      break;
-
-			case 'Y':
-
-        $this->graphic_SIMON_PRESS[0]['color'] = LaserColor::YELLOW;
-        $this->graphic_SIMON_PRESS[1]['color'] = LaserColor::YELLOW;
-        $this->graphic_SIMON_PRESS[2]['color'] = LaserColor::YELLOW;
-        $this->drawShape(250,175,1,0,$this->graphic_SIMON_PRESS);
-
-			break;
-
-			case 'A':
-
-        $this->graphic_SIMON_PRESS[0]['color'] = LaserColor::GREEN;
-        $this->graphic_SIMON_PRESS[1]['color'] = LaserColor::GREEN;
-        $this->graphic_SIMON_PRESS[2]['color'] = LaserColor::GREEN;
-        $this->drawShape(250,375,1,0,$this->graphic_SIMON_PRESS);
-
-			break;
-
-		}
-
-
-
-	}
-
   /*** #tool
   *
   * --------------
@@ -928,7 +869,11 @@ class SIMONLAZER {
     for ( $i=0; $i<=($num-1); $i++ ) {
 
       $random = array_rand($key_array);
-      $level[$i] = $key_array[$random];
+      if ( $level[$i-1] != $key_array[$random] ) {
+        $level[$i] = $key_array[$random];
+      } else {
+          $i = $i-1;
+      }
 
     }
 
@@ -980,8 +925,6 @@ class SIMONLAZER {
       }
 
     }
-
-    //echo 'ID:' . $id . ' Frame(' . $frameCount . ') $animZoom = ' . $animZoom . ' $animX = ' . $animX . ' $animY = ' . $animY . PHP_EOL;
 
   }
 
@@ -1539,6 +1482,26 @@ class SIMONLAZER {
     $this->graphic_push_Y_fade[0]['color'] = $fadeColor;
     $this->graphic_push_B_fade[0]['color'] = $fadeColor;
     $this->graphic_push_A_fade[0]['color'] = $fadeColor;
+
+    $successColor = LaserColor::GREEN;
+    $this->graphic_push_X_success = $this->graphic_push_X;
+    $this->graphic_push_Y_success = $this->graphic_push_Y;
+    $this->graphic_push_B_success = $this->graphic_push_B;
+    $this->graphic_push_A_success = $this->graphic_push_A;
+    $this->graphic_push_X_success[0]['color'] = $successColor;
+    $this->graphic_push_Y_success[0]['color'] = $successColor;
+    $this->graphic_push_B_success[0]['color'] = $successColor;
+    $this->graphic_push_A_success[0]['color'] = $successColor;
+
+    $errorColor = LaserColor::RED;
+    $this->graphic_push_X_error = $this->graphic_push_X;
+    $this->graphic_push_Y_error = $this->graphic_push_Y;
+    $this->graphic_push_B_error = $this->graphic_push_B;
+    $this->graphic_push_A_error = $this->graphic_push_A;
+    $this->graphic_push_X_error[0]['color'] = $errorColor;
+    $this->graphic_push_Y_error[0]['color'] = $errorColor;
+    $this->graphic_push_B_error[0]['color'] = $errorColor;
+    $this->graphic_push_A_error[0]['color'] = $errorColor;
 
   }
 
