@@ -260,6 +260,7 @@ class SIMONLAZER {
 
     $this->levelScreen_timer_global = 0;
     $this->levelScreen_timer_CPU = 0;
+    $this->levelScreen_timer_msg = 0;
 
     $this->levelSubScreen = 'intro';
     $this->levelState = 'CPU';
@@ -313,15 +314,27 @@ class SIMONLAZER {
 
         if ( $this->levelState == 'success' ) {
 
-          $this->levelNext();
-          $this->drawText('SUCCESS',450,470,LaserColor::LIME,.3);
+          //$this->drawText('YEAH',200,200,LaserColor::LIME,1);
+
+          if( $this->levelScreen_timer_msg == 4){
+            $this->levelNext();
+            $this->levelScreen_timer_msg = 0;
+          };
+
+          $this->levelScreen_timer_msg++;
 
         }
 
         if ( $this->levelState == 'error' ) {
 
-          $this->levelReplay();
-          $this->drawText('ERROR',450,470,LaserColor::RED,.3);
+          //$this->drawText('FAIL',200,200,LaserColor::RED,1);
+
+          if( $this->levelScreen_timer_msg == 4){
+            $this->levelReplay();
+            $this->levelScreen_timer_msg = 0;
+          };
+
+          $this->levelScreen_timer_msg++;
 
         }
 
@@ -604,6 +617,23 @@ class SIMONLAZER {
     $this->drawShape( 420,  10,  .5,  0,  $this->graphic_info_level);
     $this->drawText(sprintf('%03d',max(0,$this->levelLevel)),390,40,LaserColor::CYAN,.6);
 
+    if ( $this->levelState == 'success' ) {
+
+      $this->drawShape( 240,  250,  .7,  135,  $this->graphic_push_X_success);
+      $this->drawShape( 250,  240,  .7,  -135,  $this->graphic_push_Y_success);
+      $this->drawShape( 260,  250,  .7,  -45,  $this->graphic_push_B_success);
+      $this->drawShape( 250,  260,  .7,  45,  $this->graphic_push_A_success);
+
+    } else if ( $this->levelState == 'error' ) {
+
+      $this->drawShape( 240,  250,  .7,  135,  $this->graphic_push_X_error);
+      $this->drawShape( 250,  240,  .7,  -135,  $this->graphic_push_Y_error);
+      $this->drawShape( 260,  250,  .7,  -45,  $this->graphic_push_B_error);
+      $this->drawShape( 250,  260,  .7,  45,  $this->graphic_push_A_error);
+
+    } else {
+
+
     /*
      | Pusch X
     */
@@ -653,6 +683,8 @@ class SIMONLAZER {
     } else {
 
       $this->drawShape( 250,  260,  .7,  45,  $this->graphic_push_A_fade);
+
+    }
 
     }
 
