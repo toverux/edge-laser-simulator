@@ -66,9 +66,8 @@ class SIMONLAZER {
   	/*
      | Generate level
     */
-    $this->levelArray = $this->levelGenerate( 20 );
-    //$this->levelArray = array('X','Y','B','A');
-    echo implode(',', $this->levelArray) . PHP_EOL;
+    $this->levelNum = 50;
+    $this->levelArray = $this->levelGenerate( $this->levelNum );
 
     /*
     |
@@ -117,6 +116,8 @@ class SIMONLAZER {
           break;
 
         }
+
+        $this->backHomeControl();
 
         $this->game->endFrame();
 
@@ -212,6 +213,7 @@ class SIMONLAZER {
       "stateEnd"     =>   array( 250,  350,  1.1,  0,  $this->graphic_BT_X),
     ));
 
+
     /*
      | anim bt X push
     */
@@ -268,7 +270,8 @@ class SIMONLAZER {
 
     $this->pushSubmit = null;
     $this->pushSubmitArray = array();
-    $this->player_score = 0;
+    $this->levelScore = 0;
+    $this->levelLevel = 0;
 
   }
 
@@ -295,7 +298,7 @@ class SIMONLAZER {
         if ( $this->levelState == 'CPU' ) {
 
           $this->pushCPU();
-          $this->drawText('LOOK',10,470,LaserColor::BLUE,.3);
+          $this->drawText('LOOK',10,450,LaserColor::BLUE,.5);
 
           $this->levelScreen_timer_CPU++;
 
@@ -304,7 +307,7 @@ class SIMONLAZER {
         if ( $this->levelState == 'player' ) {
 
           $this->pushPlayer();
-          $this->drawText('PLAY',10,470,LaserColor::LIME,.3);
+          $this->drawText('PLAY',10,450,LaserColor::LIME,.5);
 
         }
 
@@ -322,15 +325,12 @@ class SIMONLAZER {
 
         }
 
-        $this->drawText('SCORE',10,10,LaserColor::YELLOW,.3);
-
         $this->levelScreenPlay();
 
       break;
 
       case 'outro':
         $this->levelScreenIntro();
-        //$this->levelScreen_timer_global--;
       break;
 
     }
@@ -408,7 +408,33 @@ class SIMONLAZER {
 
     } else {
 
-      echo 'YOU BEAT SIMON' . PHP_EOL;
+      //echo 'YOU BEAT SIMON' . PHP_EOL;
+
+    }
+
+  }
+
+
+  /*** #control
+  *
+  * ------------
+  * CONTROL BACK  => ...
+  * ------------
+  *
+  ***/
+  public function backHomeControl(){
+
+    $keyListener = XboxKey::getKeys();
+
+    switch( $keyListener[0] ) {
+
+      case XboxKey::P1_ARROW_LEFT :
+
+        $this->levelArray = $this->levelGenerate( $this->levelNum );
+
+        $this->screen = 'start';
+
+      break;
 
     }
 
@@ -471,18 +497,6 @@ class SIMONLAZER {
 
       break;
 
-      case XboxKey::P1_ARROW_RIGHT :
-
-        $this->levelSubScreen = 'outro';
-
-      break;
-
-      case XboxKey::P1_ARROW_LEFT :
-
-        $this->screen = 'start';
-
-      break;
-
       default:
 
        $this->pushX = false;
@@ -506,6 +520,7 @@ class SIMONLAZER {
         if ( $this->levelPos == $this->levelPosMax ){
 
           $this->levelState = 'success';
+          $this->levelLevel += 1 ;
 
         } else {
 
@@ -513,9 +528,13 @@ class SIMONLAZER {
 
         }
 
+        $this->levelScore += 10;
+
       } else {
 
         $this->levelState = 'error';
+
+        $this->levelScore -= 3;
 
       }
 
@@ -567,6 +586,23 @@ class SIMONLAZER {
   *
   ***/
   public function levelScreenPlay(){
+
+    /*
+     | Display BackHome
+    */
+    $this->drawShape( 450,  450,  1,  0,  $this->graphic_BT_BACK);
+
+    /*
+     | Display Score
+    */
+    $this->drawShape( 10,  10,  .5,  0,  $this->graphic_info_score);
+    $this->drawText(sprintf('%03d',max(0,$this->levelScore)),10,40,LaserColor::CYAN,.6);
+
+    /*
+     | Display Level
+    */
+    $this->drawShape( 420,  10,  .5,  0,  $this->graphic_info_level);
+    $this->drawText(sprintf('%03d',max(0,$this->levelLevel)),390,40,LaserColor::CYAN,.6);
 
     /*
      | Pusch X
@@ -777,18 +813,6 @@ class SIMONLAZER {
 
      break;
 
-     case XboxKey::P1_ARROW_RIGHT :
-
-       $this->levelSubScreen = 'outro';
-
-     break;
-
-     case XboxKey::P1_ARROW_LEFT :
-
-       $this->screen = 'start';
-
-     break;
-
    }
 
   }
@@ -813,12 +837,6 @@ class SIMONLAZER {
 
      break;
 
-     case XboxKey::P1_ARROW_LEFT :
-
-       $this->screen = 'start';
-
-     break;
-
    }
 
  }
@@ -840,12 +858,6 @@ class SIMONLAZER {
      case XboxKey::P1_X :
 
       $this->screen = 'level';
-
-     break;
-
-     case XboxKey::P1_ARROW_LEFT :
-
-       $this->screen = 'start';
 
      break;
 
@@ -876,6 +888,8 @@ class SIMONLAZER {
       }
 
     }
+
+    echo implode(',',$level) . PHP_EOL;
 
     return $level;
 
@@ -1043,6 +1057,7 @@ class SIMONLAZER {
   ***/
   public function drawText($str,$str_x,$str_y,$color,$size) {
 
+    $str = strval( $str );
     $str = strtoupper( $str );
 
     $lines = explode('|',$str);
@@ -1299,6 +1314,34 @@ class SIMONLAZER {
     );
 
     /*
+    | BUTTON BACK #graphics
+    */
+    $this->graphic_BT_BACK = array(
+
+      array(
+        "id" => "btcircle",
+        "type" => "circle",
+        "origin" => "center",
+        "color" => LaserColor::RED,
+        "coord" => array(
+          array(0,0,80,80),
+        )
+      ),
+      array(
+        "id" => "X",
+        "type" => "line",
+        "origin" => "center",
+        "color" => LaserColor::RED,
+        "coord" => array(
+          array(20,9,0,9),
+          array(0,9,9,0),
+          array(0,9,10,19),
+        )
+      ),
+
+    );
+
+    /*
     | SIMON ON PRESS #graphics
     */
     $this->graphic_SIMON_PRESS = array(
@@ -1341,6 +1384,63 @@ class SIMONLAZER {
       ),
 
 
+    );
+
+    $this->graphic_info_level = array(
+      array(
+        "id" => "",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::FUCHSIA,
+        "coord" => array(
+          array(0,0,0,31),
+          array(0,31,21,31),
+          array(115,0,115,31),
+          array(115,31,136,31),
+          array(25,0,25,31),
+          array(25,31,47,31),
+          array(25,0,47,0),
+          array(25,14,37,14),
+          array(85,0,85,31),
+          array(85,31,106,31),
+          array(85,0,106,0),
+          array(85,14,96,14),
+          array(53,0,64,31),
+          array(64,31,75,0),
+        )
+      ),
+    );
+
+    $this->graphic_info_score = array(
+      array(
+        "id" => "",
+        "type" => "line",
+        "origin" => "left",
+        "color" => LaserColor::FUCHSIA,
+        "coord" => array(
+          array(0,0,0,15),
+          array(21,15,21,31),
+          array(21,0,0,0),
+          array(82,0,82,31),
+          array(93,15,103,31),
+          array(103,0,103,14),
+          array(103,0,82,0),
+          array(102,15,81,15),
+          array(54,0,54,31),
+          array(75,0,75,31),
+          array(75,0,54,0),
+          array(74,32,53,32),
+          array(27,0,27,31),
+          array(48,0,28,0),
+          array(48,32,27,32),
+          array(21,15,0,15),
+          array(21,32,0,32),
+          array(110,0,110,32),
+          array(131,0,109,0),
+          array(131,15,109,15),
+          array(131,32,109,32),
+        )
+      ),
     );
 
     /*
@@ -1968,6 +2068,94 @@ class SIMONLAZER {
         );
 
       break;
+
+      case '1':
+      $coord = array(
+      array(0,70,48,70),
+      array(0,0,24,0),
+      array(24,0,24,69),
+      );
+      break;
+      case '2':
+      $coord = array(
+      array(0,70,48,70),
+      array(0,0,48,0),
+      array(48,34,0,34),
+      array(48,0,48,35),
+      array(0,34,0,69),
+      );
+      break;
+      case '3':
+      $coord = array(
+      array(0,70,48,70),
+      array(0,0,48,0),
+      array(48,34,0,34),
+      array(48,0,48,34),
+      array(48,34,48,70),
+      );
+      break;
+      case '4':
+      $coord = array(
+      array(0,33,48,33),
+      array(47,0,47,70),
+      array(0,0,0,33),
+      );
+      break;
+      case '5':
+      $coord = array(
+      array(0,70,48,70),
+      array(0,0,48,0),
+      array(48,34,0,34),
+      array(0,0,0,35),
+      array(47,34,47,69),
+      );
+      break;
+      case '6':
+      $coord = array(
+      array(0,70,48,70),
+      array(0,0,48,0),
+      array(48,34,0,34),
+      array(48,34,48,70),
+      array(0,0,0,70),
+
+      );
+      break;
+      case '7':
+      $coord = array(
+      array(0,0,48,0),
+      array(47,0,47,70),
+      );
+      break;
+      case '8':
+      $coord = array(
+      array(0,70,48,70),
+      array(0,0,48,0),
+      array(48,34,0,34),
+      array(48,0,48,70),
+      array(0,0,0,70),
+      );
+      break;
+      case '9':
+      $coord = array(
+      array(0,70,48,70),
+      array(0,0,48,0),
+      array(48,34,0,34),
+      array(48,0,48,70),
+      array(0,0,0,34),
+      );
+      break;
+      case '0':
+      $coord = array(
+      array(0,0,48,0),
+      array(0,70,48,70),
+      array(47,0,47,70),
+      array(0,0,0,69),
+      array(48,0,0,70),
+      );
+      break;
+
+
+
 
     }
 
