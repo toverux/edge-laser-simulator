@@ -1,7 +1,7 @@
 edge-laser-simulator
 ====================
 
-A NodeJS laser simulator for AlsaceDigitale/edgefest-hacking
+A NodeJS laser simulator for johnsudaar/EdgeNightController
 
 ![alt text](http://i.imgur.com/2CVHDOs.png "Demo")
 
