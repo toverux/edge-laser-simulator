@@ -51,7 +51,7 @@ Elle permet de se libérer de la couche réseau et du protocole lors du dévelop
 
 ####Utilisation
 ```php
-include('EdgeLaser.ns.php');
+require 'EdgeLaser.ns.php';
 
 use EdgeLaser\LaserGame;
 use EdgeLaser\LaserColor;
