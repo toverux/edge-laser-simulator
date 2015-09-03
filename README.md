@@ -11,7 +11,7 @@ A NodeJS laser simulator for [johnsudaar/EdgeNightController](https://github.com
 * [Installation du simulateur](#remarques)
 * [Manette Xbox : mapping des touches](#gestion-des-touches)
 * [EdgeLaserPHP : implé. proto. PHP](#edgelaserphp) par [toverux](https://github.com/toverux)
-* [EdgeLaserPython : implé. proto. Python)](#edgelaserpython) par [yanjost](https://github.com/yanjost)
+* [EdgeLaserPython : implé. proto. Python](#edgelaserpython) par [yanjost](https://github.com/yanjost)
 * [Format de fontes](#elf-fonts)
 
 ##Remarques
