@@ -1,7 +1,9 @@
 edge-laser-simulator
 ====================
 
-A NodeJS laser simulator for johnsudaar/EdgeNightController
+A NodeJS laser simulator for [johnsudaar/EdgeNightController](https://github.com/johnsudaar/EdgeNightController).
+
+**Note to random visitors:** if you're not coming from the HackSXB/you're not a partecipant to the EdgeFest, this project has nothing that could interest you. The code is also "a little" messy and you shouldn't read it. You've been warned.
 
 ![alt text](http://i.imgur.com/2CVHDOs.png "Demo")
 
@@ -16,7 +18,7 @@ A NodeJS laser simulator for johnsudaar/EdgeNightController
 Ceci est un serveur de test pour commencer à coder votre jeu pour l'"Edge Laser".
 Ce repo contient le kit de développement nécessaire, à savoir :
 * Serveur Node.js
-* Visualisateur en websocket (via votre navigateur Web, Chromium/Chrome testé uniquement)
+* Visualisateur en WebSocket (via votre navigateur Web, Chromium/Chrome testé uniquement)
 * Scripts d'exemples (_faites des pull requests, tous langages !_)
 
 **Attention.** Le protocole est entièrement implémenté au niveau fonctionnel, et ceci dans la version du protocole indiquée dans index.html. Néanmoins, toutes les vérifications de format des requêtes client ne sont pas encore effectuées. Une requête valide mais avec des arguments en trop fonctionnera, mais des dépassements de buffer auront lieu sur des requêtes mal formées et trop courtes.
@@ -24,31 +26,20 @@ Ce repo contient le kit de développement nécessaire, à savoir :
 ##Installation
 * Clonez ou téléchargez ce repo en local
 * Installez Node.js dernière version
-* (Optionnel) PHP-CLI pour tester les exemples en PHP et/ou faire un jeu en PHP : `apt-get install php5-cli` sous Debian-like. **Attention a bien installer la dernière version de PHP (5.5 minimum).**
+* **(Optionnel)** PHP-CLI pour tester les démos en PHP et/ou faire un jeu en PHP : `apt-get install php5-cli` sous Debian-like.
 * C'est bon !
 
-###Installation sous Mac
-Certaines personnes ont rencontré des problèmes lors de l'exécution du script d'exemple sous Mac et Windows. Voilà comment corriger le problème.
-####Solution
-* Installer PHP depuis ce site : http://php-osx.liip.ch/
-* ...et en version 5.5 minimum !
-
-####Solution dernier recours ?
-* Installer MAMP (http://www.mamp.info/en/downloads/)
-* Ajouter un alias `phpmamp='/Applications/MAMP/bin/php/php5.5.10/bin/php'` à la fin du fichier .bash_profile pour exécuter le fichier php via l'environement MAMP.
-* Pour exécuter samples.php via le terminal, utiliser l'alias phpmamp au lieu de php, comme suit : `phpmamp shapes.php`
-
-##Run the sauce
+##Prêt ?
 * `node main.js` dans edge-laser-simulator/node
 * Ouvrez index.html dans un navigateur (dans la pseudo-console doit-être affiché _Socket is ready_)
-* (Exemple) `php shapes.php` dans edge-laser-simulator/samples/php (Exemple Windows : `C:\PHP\php.exe -f "shapes.php"`)
+* (Exemple) `php shapes.php` dans edge-laser-simulator/samples/php
 
 Dans votre navigateur, la liste des clients a du être mise à jour. Et par exemple, si vous lancez plusieurs fois le script PHP dans des consoles différentes, la liste contiendra plusieurs fois le même jeu. Vous êtes alors habilité à changer de jeu à la volonté.
 Changer de jeu impliquera l'envoi de la commande STOP au jeu en cours et l'envoi de la commande GO au jeu visé.
 
 ##Gestion des touches
 La gestion des touches est multi-touches et les boutons des deux manettes XBOX sont mappés sur le clavier selon le schéma suivant.
-![xbox-mapped-keyboard](http://alembic-dev.com/dl/edgefest/kbd.png)
+![xbox-mapped-keyboard](http://i.imgur.com/gIGTz7Z.png)
 
 Pour que les touches soient capturées, c'est le visualisateur JavaScript qui doit avoir le focus (la fenêtre de visualisation ouverte dans votre navigateur).
 
@@ -56,7 +47,9 @@ Pour que les touches soient capturées, c'est le visualisateur JavaScript qui do
 EdgeLaserPHP est une petite librairie contenue dans le fichier edge-laser-simulator/samples/php/EdgeLaser.ns.php
 Elle permet de se libérer de la couche réseau et du protocole lors du développement d'un jeu en PHP pour l'"Edge Laser".
 
-####Include the sauce
+**Note :** La librairie est écrite selon des standards de développement un peu dépassés. Si le projet EdgeLaser devait être relancé, la librairie sera réécrite de manière plus modulable et sera installable via Composer.
+
+####Utilisation
 ```php
 include('EdgeLaser.ns.php');
 
