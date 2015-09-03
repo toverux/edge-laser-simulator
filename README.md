@@ -60,8 +60,9 @@ use EdgeLaser\XboxKey;
 
 ####Créer un nouveau jeu
 ```php
-$game = new LaserGame('SuperTetris');
-$game->setResolution(500)->setDefaultColor(LaserColor::LIME);
+$game = (new LaserGame('SuperTetris'))
+	->setResolution(500)
+	->setDefaultColor(LaserColor::LIME);
 ```
 
 * `setResolution` **est obligatoire** et va définir une résolution virtuelle (la résolution finale étant toujours de 65535*65535). Cela permet au développeur de ne pas travailler avec des valeurs inhabituelles de plusieurs dizaines de milliers de pixels. A l'écran, le rendu sera le même pour n'importe quelle résolution virtuelle.
@@ -71,13 +72,10 @@ $game->setResolution(500)->setDefaultColor(LaserColor::LIME);
 Le code de base d'une boucle de jeu sous EdgeLaserPHP est le suivant :
 
 ```php
-while(true)
-{
+while(true) {
 	$game->receiveServerCommands();
-
-	if(!$game->isStopped())
-	{
-		//Doing some stuff
+	if(!$game->isStopped()) {
+		# Doing some stuff
 		$game->refresh();
 	}
 }
@@ -140,13 +138,11 @@ Les valeurs int de cet array peuvent être comparées aux constantes de la class
 
 **Exemple :**
 ```php
-foreach(XboxKey::getKeys() as $key)
-{
-	switch($key)
-	{
-		case XboxKey::P1_ARROW_UP : $p1posy -= 5; break;
-		case XboxKey::P1_ARROW_LEFT : $p1posx -= 5; break;
-		case XboxKey::P1_ARROW_DOWN : $p1posy += 5; break;
+foreach(XboxKey::getKeys() as $key) {
+	switch($key) {
+		case XboxKey::P1_ARROW_UP    : $p1posy -= 5; break;
+		case XboxKey::P1_ARROW_LEFT  : $p1posx -= 5; break;
+		case XboxKey::P1_ARROW_DOWN  : $p1posy += 5; break;
 		case XboxKey::P1_ARROW_RIGHT : $p1posx += 5; break;
 	}
 }
