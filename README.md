@@ -3,15 +3,15 @@ edge-laser-simulator
 
 A NodeJS laser simulator for [johnsudaar/EdgeNightController](https://github.com/johnsudaar/EdgeNightController).
 
-**Note to random visitors:** if you're not coming from the HackSXB/you're not a partecipant to the EdgeFest, this project has nothing that could interest you. The code is also "a little" messy and you shouldn't read it. You've been warned.
+**Note to random visitors:** if you're not coming from the HackSXB/you're not a partecipant to the EdgeFest, this project has "nothing" that could interest you. The code is also "a little" messy and you shouldn't read it. You've been warned.
 
 ![alt text](http://i.imgur.com/2CVHDOs.png "Demo")
 
 ##Sommaire
 * [Installation du simulateur](#remarques)
 * [Manette Xbox : mapping des touches](#gestion-des-touches)
-* [EdgeLaserPHP (implé. PHP par morgan-linux)](#edgelaserphp)
-* [EdgeLaserPython (implé. Python par Yannick Jost)](#edgelaserpython)
+* [EdgeLaserPHP : implé. proto. PHP](#edgelaserphp) par [toverux](https://github.com/toverux)
+* [EdgeLaserPython : implé. proto. Python)](#edgelaserpython) par [yanjost](https://github.com/yanjost)
 * [Format de fontes](#elf-fonts)
 
 ##Remarques
@@ -193,6 +193,7 @@ Le format de fontes ELF (voir dans [samples/php/fonts](samples/php/fonts)) est u
 Les fontes sont d'abord écrites à la main dans un fichier .elf, chaque fonte ayant son fichier.
 
 ###Format compilé ELFC
+*Pourquoi faire simple quand on peut faire compliqué ?*
 Les fontes sont ensuite compilées via l'utilitaire Makefont : `./makefont.php fontname.elf`.
 Les données y sont ensuite compressées en GZIP.
 
