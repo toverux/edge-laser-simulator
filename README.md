@@ -47,7 +47,7 @@ Pour que les touches soient capturées, c'est le visualisateur JavaScript qui do
 EdgeLaserPHP est une petite librairie contenue dans le fichier edge-laser-simulator/samples/php/EdgeLaser.ns.php
 Elle permet de se libérer de la couche réseau et du protocole lors du développement d'un jeu en PHP pour l'"Edge Laser".
 
-**Note :** La librairie est écrite selon des standards de développement un peu dépassés. Si le projet EdgeLaser devait être relancé, la librairie sera réécrite de manière plus modulable et sera installable via Composer.
+**Note :** La librairie est écrite selon des standards de développement PHP un peu dépassés. Si le projet EdgeLaser devait être relancé, la librairie sera réécrite de manière plus modulable et sera installable via Composer.
 
 ####Utilisation
 ```php
